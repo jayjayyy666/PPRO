@@ -1,0 +1,33 @@
+#!/bin/sh
+# Git pre-commit hook pro projekt Ordinace Na Vyhlídce (PPRO)
+# Zajišťuje, že README.md (jako Single Source of Truth) je udržován aktuální při každém commitu.
+
+echo "==> Spouštím kontrolu před commitem (pre-commit hook)..."
+
+# Zjištění, zda je README.md součástí připravených (staged) změn
+STAGED_FILES=$(git diff --cached --name-only)
+
+# Pokud se commituje pouze samotný README.md nebo AGENTS.md, je to v pořádku
+README_STAGED=$(echo "$STAGED_FILES" | grep -E '^README\.md$')
+
+# Pokud se mění kód, migrace nebo konfigurace, ověříme přítomnost README.md
+OTHER_CHANGES=$(echo "$STAGED_FILES" | grep -v -E '^(README\.md|AGENTS\.md|\.gitignore|\.githooks/.*)$')
+
+if [ -n "$OTHER_CHANGES" ] && [ -z "$README_STAGED" ]; then
+    echo "======================================================================"
+    echo "[CHYBA] Pokus o commit změn v kódu bez aktualizace README.md!"
+    echo "Pravidlo projektu: README.md je jediným zdrojem pravdy (SSOT)."
+    echo "Před commitem musíš provést nezbytné záznamy ohledně postupu, změn"
+    echo "či architektonických rozhodnutí v README.md (např. v sekci Changelog)."
+    echo ""
+    echo "Dotčené soubory mimo dokumentaci:"
+    echo "$OTHER_CHANGES"
+    echo ""
+    echo "Pro nápravu: aktualizuj README.md, přidej ho přes 'git add README.md' a commit zopakuj."
+    echo "(Pro nouzové přeskočení lze použít 'git commit --no-verify -m ...')"
+    echo "======================================================================"
+    exit 1
+fi
+
+echo "==> Kontrola dokumentace v pořádku: README.md je aktuální nebo se nejedná o změnu implementace."
+exit 0

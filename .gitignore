@@ -1,0 +1,29 @@
+# IDE a editory
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS soubory
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logy a dočasné soubory
+*.log
+logs/
+temp/
+tmp/
+
+# Build a dependencies
+node_modules/
+dist/
+build/
+bin/
+obj/
+out/
+target/
+
+# Docker & lokální prostředí
+.env.local
+.env.*.local
