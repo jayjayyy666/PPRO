@@ -103,14 +103,16 @@ Projekt beze zbytku naplňuje všechna kritéria společného minima pro předm�
 
 | Požadavek minima | Způsob realizace v projektu Ordinace Na Vyhlídce |
 | :--- | :--- |
-| **3 vrstvy se závislostmi jedním směrem** | 1. **Prezentační vrstva:** REST API controllery / Web UI (žádná přímá DB komunikace).<br>2. **Aplikační/Doménová vrstva:** Služby, validátory obchodních pravidel, use cases.<br>3. **Datová/Infrastrukturní vrstva:** Repozitáře, ORM entity, migrace, integrace s DB. |
-| **Relační databáze v Dockeru** | PostgreSQL běžící v izolovaném kontejneru v rámci Docker Compose sítě. |
-| **Databázové migrace** | Verzované migrace pro automatické vytvoření a údržbu schématu při startu. |
+| **Technologický stack (Python)** | **Backend:** Python 3.11+, FastAPI (asynchronní i synchronní REST API, automatická validace a OpenAPI dokumentace).<br>**Prezentační vrstva:** Jinja2 serverové šablony + Vanilla CSS (blesková odezva bez složitého JS bundlování, optimalizováno pro paní Věru).<br>**ORM & Datová vrstva:** SQLAlchemy 2.0 (deklarativní mapování entit), Pydantic v2 (DTO & validátory).<br>**Migrace:** Alembic (verzovaná schémata).<br>**Testy:** pytest (unit & integrační testy). |
+| **3 vrstvy se závislostmi jedním směrem** | 1. **Prezentační vrstva (`src/presentation/`):** FastAPI webové a REST endpointy, Jinja2 UI, statické assety.<br>2. **Aplikační/Doménová vrstva (`src/domain/`, `src/application/`):** Doménové entity, služby (`PatientService`), validátory rodných čísel a telefonů, prevence duplicit.<br>3. **Datová/Infrastrukturní vrstva (`src/infrastructure/`):** SQLAlchemy repozitáře, DB relace, seed skripty, migrace. |
+| **Relační databáze v Dockeru** | PostgreSQL běžící v izolovaném kontejneru v rámci Docker Compose sítě (s možností SQLite pro ultra-rychlé lokální testy). |
+| **Databázové migrace** | Verzované migrace (Alembic) pro automatické vytvoření a údržbu schématu při startu. |
 | **Nejméně 5 entit** | 1. `Patient` (Pacient)<br>2. `Doctor` (Lékař)<br>3. `DoctorWorkingHours` (Ordinační hodiny a pracoviště)<br>4. `Appointment` (Rezervace)<br>5. `Visit` (Proběhlá návštěva ordinace)<br>6. `MedicalProcedure` (Číselník zdravotních výkonů)<br>7. `VisitProcedure` (Vazební entita M:N s počtem aplikací) |
 | **Alespoň jedna vazba M:N** | Vazba mezi uskutečněnou návštěvou (`Visit`) a zdravotním výkonem (`MedicalProcedure`) realizovaná prostřednictvím vazební tabulky `VisitProcedure` s doplňkovým atributem `count` (počet provedených aplikací daného výkonu). |
-| **Automatizované testy** | Sada unit testů pro klíčová obchodní pravidla (detekce překryvu termínů, validace ordinačních hodin, zamezení výkonů před návštěvou) a integrační testy API endpointů. |
-| **Spuštění jedním příkazem** | Kompletní aplikace, databáze a migrace startují přes `docker compose up`. |
-| **Syntetická data** | Žádná reálná data! Seed skript generuje realistická, ale 100% fiktivní data pacientů, lékařů, ordinačních hodin a číselníku výkonů (VZP kódy). |
+| **Automatizované testy** | Sada pytest testů pro klíčová obchodní pravidla (detekce překryvu termínů, validace ordinačních hodin, zamezení výkonů před návštěvou, detekce duplicit pacientů) a integrační testy API endpointů. |
+| **Spuštění jedním příkazem** | Kompletní aplikace, databáze a migrace startují přes `docker compose up --build`. |
+| **Syntetická data** | Žádná reálná data! Seed skript `src/infrastructure/seed.py` generuje realistická, ale 100% fiktivní data pacientů, lékařů, ordinačních hodin a číselníku výkonů (VZP kódy). |
+
 
 ---
 
@@ -240,17 +242,33 @@ erDiagram
 ### Prerekvizity
 - Docker Desktop / Docker Engine s podporou Docker Compose
 
-### Spuštění celého systému
+### Spuštění celého systému v Dockeru
 ```bash
 docker compose up -d --build
 ```
 Po nastartování:
-- **Webová aplikace / API:** `http://localhost:3000` (nebo dle zvoleného portu v docker-compose.yml)
+- **Webová aplikace pro recepci (UI):** `http://localhost:8000/patients`
+- **Interaktivní OpenAPI dokumentace (Swagger):** `http://localhost:8000/docs`
 - **Databáze PostgreSQL:** `localhost:5432`
 
-### Zastavení systému
+### Lokální spuštění bez Dockeru (Development)
 ```bash
-docker compose down
+# Vytvoření a aktivace virtuálního prostředí
+python -m venv venv
+.\venv\Scripts\activate   # Windows PowerShell
+# source venv/bin/activate # Linux/macOS
+
+# Instalace závislostí
+pip install -r requirements.txt
+
+# Inicializace syntetických dat a spuštění serveru
+python -m src.infrastructure.seed
+uvicorn src.presentation.app:app --reload --port 8000
+```
+
+### Spuštění automatizovaných testů
+```bash
+pytest -v
 ```
 
 ---
@@ -259,8 +277,16 @@ docker compose down
 
 Všechny významné architektonické i implementační kroky jsou zaznamenávány zde:
 
-- **2026-10-05:**
+- **2026-10-05 (Fáze 1 – Prototyp entity Pacient v Pythonu):**
+  - Vybrán a zdokumentován technologický stack: Python 3.11+, FastAPI, SQLAlchemy 2.0, Pydantic v2, Jinja2 / CSS UI, PostgreSQL / SQLite, Docker Compose, pytest.
+  - Vytvořena 3-vrstvá struktura projektu: `domain` (model `Patient`), `application` (`PatientService`, DTO, validátory), `infrastructure` (SQLAlchemy repozitář, DB engine, seed syntetických dat), `presentation` (FastAPI routery, Jinja2 šablony, CSS).
+  - Implementováno bleskové vyhledávání pacientů dle příjmení a telefonu pro paní Věru.
+  - Implementována prevence duplicit dle rodného čísla a telefonu (řešení otevřeného bodu 4 klienta).
+  - Vytvořen `Dockerfile` a `docker-compose.yml` pro spuštění jedním příkazem.
+  - Přidána sada unit testů (`tests/test_patient.py`).
+- **2026-10-05 (Inicializace projektu):**
   - Inicializace Git repozitáře.
   - Vytvoření projektových směrnic `AGENTS.md` (pravidla pro asistenta: povinný `-m` parametr u commitů, zákaz samovolného `git push`, aktualizace SSOT dokumentace).
   - Vytvoření autoritativního dokumentu `README.md` (analýza Zadání A, zachycení požadavků, detailní vyřešení 5 otevřených bodů klienta, 3vrstvá architektura, ERD v Mermaid).
   - Konfigurace pre-commit kontrolního mechanismu pro garanci integrity technické dokumentace.
+

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Ordinace Na Vyhlídce{% endblock %} – Systém ordinace</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/patients" class="brand">
+      <div class="brand-icon">✚</div>
+      <div>
+        <div class="brand-title">Ordinace Na Vyhlídce</div>
+        <div class="brand-subtitle">MUDr. Jana Hrubá & kolektiv</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="/patients" class="nav-link {% if active_nav == 'patients' %}active{% endif %}">📋 Kartotéka pacientů</a>
+      <span class="nav-link" style="color: #94a3b8; cursor: not-allowed;" title="Bude aktivní v další fázi">📅 Kalendář & Diář</span>
+      <span class="nav-link" style="color: #94a3b8; cursor: not-allowed;" title="Bude aktivní v další fázi">📊 Měsíční výkazy</span>
+      <a href="/docs" target="_blank" class="nav-link">⚡ API Docs</a>
+      <span class="user-badge">👤 Recepce (paní Věra)</span>
+    </div>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

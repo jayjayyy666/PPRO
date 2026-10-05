@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ordinace_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ordinace
+      POSTGRES_USER: ordinace_user
+      POSTGRES_PASSWORD: ordinace_secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ordinace_user -d ordinace"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: ordinace_web
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://ordinace_user:ordinace_secure_password@db:5432/ordinace
+      SQL_ECHO: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
