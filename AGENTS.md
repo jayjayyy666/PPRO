@@ -1,6 +1,6 @@
 # AGENTS.md – Pravidla chování asistenta a provozní směrnice projektu
 
-Tento dokument definuje závazná pravidla, zásady spolupráce a pracovní postupy pro AI asistenta (Antigravity) při vývoji semestrálního projektu předmětu **Pokročilé programování (PPRO)** na téma **Zadání A: Rezervace v ordinaci (Ordinace Na Vyhlídce)**.
+Tento dokument definuje závazná pravidla, zásady spolupráce a pracovní postupy pro AI asistenta (Antigravity) při vývoji semestrálního projektu předmětu **Pokročilé programování (PPRO)** na téma **Zadání B: Sklad pro malý e-shop (Dřevěnka s.r.o. – Petr Doležal)**.
 
 ---
 
@@ -13,7 +13,7 @@ Tento dokument definuje závazná pravidla, zásady spolupráce a pracovní post
    - Soubor `README.md` je jediným a autoritativním zdrojem pravdy pro zadání, technickou dokumentaci, seznam architektonických rozhodnutí a stav implementace.
    - Jakákoliv změna v návrhu, doménovém modelu, rozhraních či postupu řešení **musí být neprodleně zapsána do `README.md`**.
 3. **Předvídatelnost a transparentnost:**
-   - Každý krok musí mít jasné odůvodnění s ohledem na požadavky klienta (MUDr. Jana Hrubá) a povinné minimum projektu.
+   - Každý krok musí mít jasné odůvodnění s ohledem na požadavky klienta (Petr Doležal, Dřevěnka s.r.o.) a povinné minimum projektu.
 
 ---
 
@@ -52,9 +52,9 @@ Tento dokument definuje závazná pravidla, zásady spolupráce a pracovní post
    - *Prezentační vrstva (Web UI / REST API / Controllery)* $\rightarrow$ *Aplikační a doménová vrstva (Byznys logika, Služby, Validátory)* $\rightarrow$ *Datová vrstva (Infrastruktura, Repozitáře, ORM, DB migrace)*.
    - Žádné přeskakování vrstev a žádné cyklické závislosti.
 2. **Nekompromisní vynucení obchodních pravidel:**
-   - Obchodní pravidla (kontrola ordinačních hodin, zákaz překryvu termínů, zákaz zadávání výkonů předem) musí být vynucena na doménové vrstvě i na úrovni databáze (např. unikátní / exklusivní indexy, transakční zámky). Nespoléhá se na „slušnost“ frontendu či uživatele.
+   - Obchodní pravidla (zákaz výdeje nad stav zásob, atomické rezervace, zákaz záporného stavu zásob `quantity >= 0`, neměnnost prodejních cen po odeslání objednávky) musí být vynucena na doménové vrstvě i na úrovni databáze (např. transakční zámky, integritní omezení `CHECK`). Nespoléhá se na „slušnost“ frontendu či uživatele.
 3. **Nemazání historie (Audit & Soft-Delete):**
-   - Historie pacienta a proběhlých návštěv se fyzicky nemaže. Používá se stavový systém a soft-delete (např. pole `cancelled_at`, `status`).
+   - Historie zákazníků (kvůli reklamacím) a veškeré skladové pohyby se fyzicky nemažou. Pohyby tvoří neměnný append-only auditní log.
 4. **Reprodukovatelnost prostředí:**
    - Aplikace a databáze musí být plně zprovoznitelné pomocí jediného příkazu:
      ```bash

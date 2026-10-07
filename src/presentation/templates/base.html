@@ -3,29 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Ordinace Na Vyhlídce{% endblock %} – Systém ordinace</title>
+  <title>{% block title %}Dřevěnka s.r.o. – Skladový systém{% endblock %}</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <nav class="navbar">
-    <a href="/patients" class="brand">
-      <div class="brand-icon">✚</div>
-      <div>
-        <div class="brand-title">Ordinace Na Vyhlídce</div>
-        <div class="brand-subtitle">MUDr. Jana Hrubá & kolektiv</div>
-      </div>
-    </a>
-    <div class="nav-links">
-      <a href="/patients" class="nav-link {% if active_nav == 'patients' %}active{% endif %}">📋 Kartotéka pacientů</a>
-      <span class="nav-link" style="color: #94a3b8; cursor: not-allowed;" title="Bude aktivní v další fázi">📅 Kalendář & Diář</span>
-      <span class="nav-link" style="color: #94a3b8; cursor: not-allowed;" title="Bude aktivní v další fázi">📊 Měsíční výkazy</span>
-      <a href="/docs" target="_blank" class="nav-link">⚡ API Docs</a>
-      <span class="user-badge">👤 Recepce (paní Věra)</span>
+  <header>
+    <div class="nav-container">
+      <a href="/" class="brand">
+        <span class="brand-icon">🪵</span>
+        <div class="brand-text">
+          <h1>Dřevěnka s.r.o.</h1>
+          <p>Skladový systém • Petr Doležal</p>
+        </div>
+      </a>
+      <nav>
+        <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">🔥 Nástěnka (Co hoří)</a>
+        <a href="/products" class="nav-link {% if active_page == 'products' %}active{% endif %}">📦 Produkty a zásoby</a>
+        <a href="/orders" class="nav-link {% if active_page == 'orders' %}active{% endif %}">🛒 Objednávky</a>
+        <a href="/transfer" class="nav-link {% if active_page == 'transfer' %}active{% endif %}">🚚 Převod mezi sklady</a>
+        <a href="/movements" class="nav-link {% if active_page == 'movements' %}active{% endif %}">📜 Pohyby na skladě</a>
+        <a href="/reports" class="nav-link {% if active_page == 'reports' %}active{% endif %}">📊 Měsíční obrat</a>
+        <a href="/docs" target="_blank" class="nav-link">⚡ API Docs</a>
+      </nav>
     </div>
-  </nav>
+  </header>
 
   <main class="container">
+    {% if error %}
+    <div class="flash-msg flash-error">
+      <strong>⚠️ Chyba:</strong> {{ error }}
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="flash-msg flash-success">
+      <strong>✅ Úspěch:</strong> {{ success }}
+    </div>
+    {% endif %}
+
     {% block content %}{% endblock %}
   </main>
+
+  <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-color); background: #ffffff; margin-top: auto;">
+    <p><strong>Dřevěnka s.r.o.</strong> – Skladový systém dřevěných hraček pro e-shop • Hradec Králové & Třebechovice pod Orebem</p>
+    <p style="margin-top: 0.35rem;">Semestrální projekt PPRO • FIM UHK 2026/2027 • <a href="https://github.com/jayjayyy666/PPRO.git" target="_blank" style="color: var(--primary-color);">GitHub repozitář</a></p>
+  </footer>
 </body>
 </html>

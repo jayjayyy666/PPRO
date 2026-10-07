@@ -1,3 +1,3 @@
-from src.infrastructure.repositories.patient_repository import PatientRepository
-
-__all__ = ["PatientRepository"]
+"""
+Infrastrukturní repozitáře pro Dřevěnka s.r.o.
+"""

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Měsíční obrat po kategoriích – Dřevěnka s.r.o.{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">Obrat po kategoriích (Co firmu živí)</h2>
+    <p style="color: var(--text-muted);">Měsíční finanční analýza prodeje rozdělená podle kategorií hraček (požadavek 8).</p>
+  </div>
+  <div>
+    <form method="get" action="/reports" style="display: flex; gap: 0.5rem; align-items: center;">
+      <select name="year" style="width: auto;">
+        <option value="2026" {% if selected_year == 2026 %}selected{% endif %}>Rok 2026</option>
+        <option value="2025" {% if selected_year == 2025 %}selected{% endif %}>Rok 2025</option>
+      </select>
+      <select name="month" style="width: auto;">
+        {% set months = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'] %}
+        {% for m_name in months %}
+          <option value="{{ loop.index }}" {% if selected_month == loop.index %}selected{% endif %}>{{ m_name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary btn-sm">Zobrazit</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">
+    <span>Výsledky za {{ selected_month }}/{{ selected_year }}</span>
+    <span style="font-size: 0.9rem; color: var(--text-muted);">
+      Celkový obrat: <strong>{{ "%.2f"|format(total_revenue) }} Kč</strong>
+    </span>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Kategorie</th>
+          <th style="text-align: right;">Počet objednávek</th>
+          <th style="text-align: right;">Prodaných kusů</th>
+          <th style="text-align: right;">Celkový obrat (Kč)</th>
+          <th style="width: 250px;">Podíl na tržbách</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cat in category_stats %}
+        <tr>
+          <td><strong>{{ cat.category_name }}</strong></td>
+          <td style="text-align: right;">{{ cat.total_orders_count }}</td>
+          <td style="text-align: right;">{{ cat.total_items_sold }} ks</td>
+          <td style="text-align: right; font-weight: 700; font-size: 1.05rem; color: var(--primary-color);">
+            {{ "%.2f"|format(cat.total_revenue) }} Kč
+          </td>
+          <td>
+            {% set pct = (cat.total_revenue / total_revenue * 100) if total_revenue > 0 else 0 %}
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <div style="flex: 1; background: #e5ded3; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="background: var(--primary-color); height: 100%; width: {{ pct }}%;"></div>
+              </div>
+              <span style="font-size: 0.8rem; font-weight: 600; min-width: 45px; text-align: right;">
+                {{ "%.1f"|format(pct) }} %
+              </span>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

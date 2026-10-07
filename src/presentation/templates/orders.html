@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Objednávky – Dřevěnka s.r.o.{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">Objednávky zákazníků</h2>
+    <p style="color: var(--text-muted);">Kontrola disponibilních zásob, atomická rezervace a expedice balíků.</p>
+  </div>
+</div>
+
+<!-- Formulář pro novou objednávku -->
+<div class="card" id="new-order">
+  <div class="card-title">
+    <span>🛒 Zadat novou objednávku (Ověření dostatku zásob)</span>
+  </div>
+  <form method="post" action="/orders/new">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+      <div class="form-group">
+        <label>Jméno a příjmení zákazníka *</label>
+        <input type="text" name="customer_name" required placeholder="Např. Alena Nováková">
+      </div>
+      <div class="form-group">
+        <label>E-mail zákazníka *</label>
+        <input type="email" name="customer_email" required placeholder="např. novakova@seznam.cz">
+      </div>
+      <div class="form-group">
+        <label>Telefon</label>
+        <input type="text" name="customer_phone" placeholder="+420 777 ...">
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+      <div class="form-group">
+        <label>Dřevěná hračka k objednání *</label>
+        <select name="product_id" required>
+          <option value="">-- Vyberte hračku --</option>
+          {% for prod in available_products %}
+            <option value="{{ prod.id }}">{{ prod.code }} – {{ prod.name }} ({{ "%.0f"|format(prod.selling_price) }} Kč)</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Počet kusů *</label>
+        <input type="number" name="quantity" min="1" value="1" required>
+      </div>
+      <div class="form-group">
+        <label>Expedovat ze skladu</label>
+        <select name="warehouse_id">
+          {% for wh in warehouses %}
+            <option value="{{ wh.id }}" {% if wh.is_primary %}selected{% endif %}>{{ wh.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Poznámka</label>
+      <input type="text" name="note" placeholder="Např. Vánoční dárek, zabalit opatrně">
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+      <button type="submit" class="btn btn-primary" style="font-size: 1rem; padding: 0.75rem 1.5rem;">
+        Ověřit zásoby a potvrdit objednávku
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Seznam existujících objednávek -->
+<div class="card">
+  <div class="card-title">
+    <span>Historie objednávek ({{ orders|length }})</span>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Číslo</th>
+          <th>Datum</th>
+          <th>Zákazník</th>
+          <th>Položky</th>
+          <th style="text-align: right;">Celková cena</th>
+          <th>Stav</th>
+          <th>Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td><strong>{{ o.order_number }}</strong></td>
+          <td style="color: var(--text-muted);">{{ o.order_date.strftime('%d.%m.%Y %H:%M') }}</td>
+          <td>
+            <strong>{{ o.customer.name }}</strong>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ o.customer.email }}</div>
+          </td>
+          <td>
+            {% for item in o.items %}
+              <div>{{ item.quantity }}× {{ item.product.name }} ({{ "%.0f"|format(item.unit_price) }} Kč/ks)</div>
+            {% endfor %}
+          </td>
+          <td style="text-align: right; font-weight: 700; font-size: 1rem;">
+            {{ "%.2f"|format(o.total_price) }} Kč
+          </td>
+          <td>
+            {% if o.status == 'SHIPPED' %}
+              <span class="badge badge-green">Odesláno</span>
+            {% elif o.status == 'CONFIRMED' %}
+              <span class="badge badge-blue">Rezervováno</span>
+            {% elif o.status == 'CANCELLED' %}
+              <span class="badge badge-red">Stornováno</span>
+            {% else %}
+              <span class="badge">{{ o.status }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if o.status == 'CONFIRMED' %}
+              <form method="post" action="/orders/{{ o.id }}/ship" style="display: inline;">
+                <button type="submit" class="btn btn-primary btn-sm">📦 Expedovat</button>
+              </form>
+              <form method="post" action="/orders/{{ o.id }}/cancel" style="display: inline; margin-left: 0.25rem;">
+                <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Opravdu stornovat a uvolnit rezervované zásoby?');">Storno</button>
+              </form>
+            {% else %}
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Uzamčeno</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

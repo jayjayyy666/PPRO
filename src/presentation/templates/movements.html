@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Pohyby na skladě – Dřevěnka s.r.o.{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem;">
+  <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">Dohledání skladových pohybů (Audit log)</h2>
+  <p style="color: var(--text-muted);">
+    Odpověď na otázku klienta: <em>„Kde je ta káča, co jsem ji měl minulý týden?“</em> Každá změna stavu je přesně evidována.
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-title">
+    <span>Historie všech pohybů ({{ movements|length }})</span>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Čas pohybu</th>
+          <th>Typ operace</th>
+          <th>Hračka (Produkt)</th>
+          <th style="text-align: right;">Množství</th>
+          <th>Zdrojový sklad</th>
+          <th>Cílový sklad</th>
+          <th>Poznámka / Důvod</th>
+          <th>Kdo provedl</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in movements %}
+        <tr>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">
+            {{ m.created_at.strftime('%d.%m.%Y %H:%M') }}
+          </td>
+          <td>
+            {% if m.movement_type == 'RECEIPT' %}
+              <span class="badge badge-green">📥 Příjem</span>
+            {% elif m.movement_type == 'DISPATCH' %}
+              <span class="badge badge-blue">📤 Výdej</span>
+            {% elif m.movement_type == 'TRANSFER_OUT' %}
+              <span class="badge badge-yellow">🚚 Převod (Výdej)</span>
+            {% elif m.movement_type == 'TRANSFER_IN' %}
+              <span class="badge badge-yellow">🚚 Převod (Příjem)</span>
+            {% elif m.movement_type == 'INVENTORY_ADJUSTMENT' %}
+              <span class="badge badge-red">⚖️ Inventura</span>
+            {% else %}
+              <span class="badge">{{ m.movement_type }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <strong>{{ m.product.code }}</strong> – {{ m.product.name }}
+          </td>
+          <td style="text-align: right; font-weight: 700; font-size: 1rem;">
+            {{ m.quantity }} ks
+          </td>
+          <td>{{ m.source_warehouse.name if m.source_warehouse else "—" }}</td>
+          <td>{{ m.target_warehouse.name if m.target_warehouse else "—" }}</td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">{{ m.note }}</td>
+          <td><small>{{ m.performed_by }}</small></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

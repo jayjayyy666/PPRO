@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Nástěnka (Co hoří) – Dřevěnka s.r.o.{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">Přehled zásob & co hoří</h2>
+    <p style="color: var(--text-muted);">Semafor minimálních zásob a okamžitý stav skladů v Hradci Králové a garáži v Třebechovicích.</p>
+  </div>
+  <div>
+    <a href="/transfer" class="btn btn-secondary">🚚 Přenést zboží z garáže</a>
+    <a href="/orders#new-order" class="btn btn-primary">+ Zadat novou objednávku</a>
+  </div>
+</div>
+
+<!-- Souhrnné statistiky -->
+<div class="grid-stats">
+  <div class="stat-card">
+    <div class="stat-label">Položek v katalogu</div>
+    <div class="stat-value">{{ total_products_count }}</div>
+    <div class="stat-sub">Celkem aktivních dřevěných hraček</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Sklad Hradec Králové</div>
+    <div class="stat-value">{{ hradec_total_stock }} ks</div>
+    <div class="stat-sub">Připraveno k expedici</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Garáž Třebechovice</div>
+    <div class="stat-value">{{ garaz_total_stock }} ks</div>
+    <div class="stat-sub">Sezónní zásoby k převozu</div>
+  </div>
+  <div class="stat-card" style="border-left: 4px solid var(--alert-red-border);">
+    <div class="stat-label" style="color: var(--alert-red-text);">Kritické zásoby (Hoří)</div>
+    <div class="stat-value" style="color: var(--alert-red-text);">{{ red_alerts_count }}</div>
+    <div class="stat-sub">Produktů kleslo pod minimální limit</div>
+  </div>
+</div>
+
+<!-- Barevný semafor - Co hoří -->
+<div class="card">
+  <div class="card-title">
+    <span>🔥 Seznam položek pod minimem (Nákupní a výrobní doporučení)</span>
+    <span class="badge badge-red">{{ low_stock_alerts|length }} položek k řešení</span>
+  </div>
+
+  {% if low_stock_alerts %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Stav</th>
+          <th>Kód (SKU)</th>
+          <th>Název hračky</th>
+          <th>Kategorie</th>
+          <th style="text-align: right;">Fyzicky na skladě</th>
+          <th style="text-align: right;">Volno k prodeji</th>
+          <th style="text-align: right;">Minimální stav</th>
+          <th style="text-align: right;">Doporučeno vyrobit/koupit</th>
+          <th>Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for alert in low_stock_alerts %}
+        <tr>
+          <td>
+            {% if alert.urgency_status == 'RED' %}
+              <span class="badge badge-red">🔴 Hoří!</span>
+            {% else %}
+              <span class="badge badge-yellow">🟡 Pozor</span>
+            {% endif %}
+          </td>
+          <td><strong>{{ alert.product_code }}</strong></td>
+          <td>{{ alert.product_name }}</td>
+          <td>
+            {% for cat in alert.categories %}
+              <span class="badge-tag">{{ cat }}</span>
+            {% endfor %}
+          </td>
+          <td style="text-align: right; font-weight: 700; {% if alert.current_physical_stock < alert.min_stock_level %}color: var(--alert-red-text);{% endif %}">
+            {{ alert.current_physical_stock }} ks
+          </td>
+          <td style="text-align: right;">{{ alert.current_available_stock }} ks</td>
+          <td style="text-align: right;">{{ alert.min_stock_level }} ks</td>
+          <td style="text-align: right; font-weight: 700; color: var(--primary-color);">
+            +{{ alert.recommended_reorder }} ks
+          </td>
+          <td>
+            <a href="/transfer?product_id={{ alert.product_id }}" class="btn btn-secondary btn-sm" title="Zkontrolovat zásoby v garáži a převézt">
+              Přenést
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert-banner green">
+    <span class="alert-icon">✅</span>
+    <div>
+      <strong>Všechny zásoby jsou v pořádku!</strong>
+      <p>Aktuálně žádný z produktů neklesl pod nastavenou minimální hladinu.</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

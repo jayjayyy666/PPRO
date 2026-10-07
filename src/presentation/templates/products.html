@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Produkty a zásoby po skladech – Dřevěnka s.r.o.{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">Katalog dřevěných hraček ({{ products|length }} položek)</h2>
+    <p style="color: var(--text-muted);">Přehled zásob v Hradci Králové a garáži v Třebechovicích pod Orebem.</p>
+  </div>
+</div>
+
+<!-- Vyhledávání a filtry -->
+<div class="card" style="padding: 1rem 1.25rem;">
+  <form method="get" action="/products" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+    <div style="flex: 2; min-width: 250px;">
+      <input type="text" name="q" value="{{ query or '' }}" placeholder="Hledat podle názvu nebo kódu (např. káča, HRA-001)...">
+    </div>
+    <div style="flex: 1; min-width: 200px;">
+      <select name="category">
+        <option value="">Všechny kategorie</option>
+        {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if selected_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary">Filtrovat</button>
+      {% if query or selected_category %}
+        <a href="/products" class="btn btn-secondary">Zrušit filtr</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Tabulka produktů -->
+<div class="card">
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Kód</th>
+          <th>Název hračky</th>
+          <th>Kategorie</th>
+          <th style="text-align: right;">Cena nákupní</th>
+          <th style="text-align: right;">Cena prodejní</th>
+          <th style="text-align: center; background-color: #f5ede1;">Sklad Hradec</th>
+          <th style="text-align: center; background-color: #edebe6;">Garáž Třebechovice</th>
+          <th style="text-align: center;">Celkem volno</th>
+          <th style="text-align: center;">Min. zásoba</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td><strong>{{ p.code }}</strong></td>
+          <td>
+            <div style="font-weight: 600;">{{ p.name }}</div>
+            {% if p.variants %}
+              <div style="font-size: 0.75rem; color: var(--text-muted);">
+                Varianty: {% for v in p.variants %}{{ v.color_or_name }}{% if not loop.last %}, {% endif %}{% endfor %}
+              </div>
+            {% endif %}
+          </td>
+          <td>
+            {% for cat in p.categories %}
+              <span class="badge-tag">{{ cat.name }}</span>
+            {% endfor %}
+          </td>
+          <td style="text-align: right; color: var(--text-muted);">{{ "%.1f"|format(p.purchase_price) }} Kč</td>
+          <td style="text-align: right; font-weight: 700;">{{ "%.1f"|format(p.selling_price) }} Kč</td>
+
+          <!-- Sklad Hradec -->
+          <td style="text-align: center; background-color: #fbf8f3;">
+            {% set h_item = p.stock_items | selectattr('warehouse.code', 'equalto', 'HRADEC') | first %}
+            {% if h_item %}
+              <strong>{{ h_item.physical_quantity }}</strong> ks
+              {% if h_item.reserved_quantity > 0 %}
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">(rez: {{ h_item.reserved_quantity }})</span>
+              {% endif %}
+            {% else %}
+              <span style="color: var(--text-muted);">0</span>
+            {% endif %}
+          </td>
+
+          <!-- Garáž Třebechovice -->
+          <td style="text-align: center; background-color: #f6f5f2;">
+            {% set g_item = p.stock_items | selectattr('warehouse.code', 'equalto', 'TREBECHOVICE') | first %}
+            {% if g_item %}
+              <strong>{{ g_item.physical_quantity }}</strong> ks
+            {% else %}
+              <span style="color: var(--text-muted);">0</span>
+            {% endif %}
+          </td>
+
+          <!-- Celkem k prodeji -->
+          <td style="text-align: center;">
+            {% set total_phys = p.stock_items | map(attribute='physical_quantity') | sum %}
+            {% set total_res = p.stock_items | map(attribute='reserved_quantity') | sum %}
+            {% set total_avail = total_phys - total_res %}
+            {% if total_phys < p.min_stock_level %}
+              <span class="badge badge-red">{{ total_avail }} ks</span>
+            {% else %}
+              <span class="badge badge-green">{{ total_avail }} ks</span>
+            {% endif %}
+          </td>
+
+          <!-- Minimální limit -->
+          <td style="text-align: center; color: var(--text-muted);">
+            {{ p.min_stock_level }} ks
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
