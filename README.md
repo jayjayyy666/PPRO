@@ -306,7 +306,7 @@ pytest -v
 ## 8. Deník změn a postup prací (Changelog)
 
 - **2026-10-07 (Oprava IDE prostředí a typových anotací):**
-  - Vyřešena integrace Python virtuálního prostředí pro vývojová prostředí (Pyright, VS Code / Antigravity IDE) pomocí konfigurace `pyrightconfig.json` a `.vscode/settings.json`.
+  - Vyřešena integrace Python virtuálního prostředí pro vývojová prostředí a jazykové servery (Pyrefly, Pyright, VS Code / Antigravity IDE) pomocí konfigurace `pyrefly.toml`, `pyproject.toml`, `pyrightconfig.json` a `.vscode/settings.json`, včetně vytvoření symlink/junction `.venv` -> `venv`.
   - Opraveny a modernizovány typové anotace v aplikačních službách (`InventoryService`, `OrderService`, `ReportingService`) s využitím `from __future__ import annotations` a nativních typů (`list`, `tuple`, `dict`, `| None`).
   - Rozšířen `.gitignore` o vyloučení Python cache souborů (`__pycache__`, `*.pyc`), virtuálních prostředí (`venv/`, `.venv/`) a lokálních databázových souborů (`*.db`).
   - Všech 9 automatizovaných testů v `pytest` prochází bez chyb.

@@ -1,0 +1,13 @@
+[project]
+name = "drevenka-eshop"
+version = "1.0.0"
+description = "Skladovy system pro maly e-shop Drevenka s.r.o."
+requires-python = ">=3.11"
+
+[tool.pyrefly]
+python-interpreter-path = "venv/Scripts/python.exe"
+search-path = [
+    ".",
+    "src",
+    "venv/Lib/site-packages"
+]
