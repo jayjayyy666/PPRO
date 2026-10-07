@@ -8,7 +8,14 @@ Vygeneruje:
 - Zákazníky a ukázkové objednávky / skladové pohyby
 """
 import random
+import sys
 from datetime import datetime, timedelta
+
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 from src.infrastructure.database import SessionLocal, init_db
 from src.infrastructure.models import (
     WarehouseModel,
@@ -31,10 +38,10 @@ def seed_database():
     try:
         # Pokud již data existují, neprovádíme re-seed
         if db.query(ProductModel).count() >= 400:
-            print("Databáze již obsahuje 400+ položek. Seed byl přeskočen.")
+            print("Databaze jiz obsahuje 400+ polozek. Seed byl preskocen.")
             return
 
-        print("==> Inicializace syntetických dat pro Dřevěnka s.r.o. (400 položek)...")
+        print("==> Inicializace syntetickych dat pro Drevenka s.r.o. (400 polozek)...")
 
         # 1. Sklady
         wh_hradec = WarehouseModel(
@@ -270,11 +277,11 @@ def seed_database():
                 )
 
         db.commit()
-        print("==> Úspěšně nahráno 400 produktů, 2 sklady a syntetická data do databáze!")
+        print("==> Uspesne nahrano 400 produktu, 2 sklady a synteticka data do databaze!")
 
     except Exception as e:
         db.rollback()
-        print(f"Chyba při seedování: {e}")
+        print(f"Chyba pri seedovani: {e}")
         raise
     finally:
         db.close()

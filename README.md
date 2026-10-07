@@ -305,6 +305,12 @@ pytest -v
 
 ## 8. Deník změn a postup prací (Changelog)
 
+- **2026-10-07 (Oprava IDE prostředí a typových anotací):**
+  - Vyřešena integrace Python virtuálního prostředí pro vývojová prostředí (Pyright, VS Code / Antigravity IDE) pomocí konfigurace `pyrightconfig.json` a `.vscode/settings.json`.
+  - Opraveny a modernizovány typové anotace v aplikačních službách (`InventoryService`, `OrderService`, `ReportingService`) s využitím `from __future__ import annotations` a nativních typů (`list`, `tuple`, `dict`, `| None`).
+  - Rozšířen `.gitignore` o vyloučení Python cache souborů (`__pycache__`, `*.pyc`), virtuálních prostředí (`venv/`, `.venv/`) a lokálních databázových souborů (`*.db`).
+  - Všech 9 automatizovaných testů v `pytest` prochází bez chyb.
+
 - **2026-10-07 (Přechod na Zadání B: Sklad pro malý e-shop Dřevěnka s.r.o.):**
   - Aktualizována autoritativní dokumentace `README.md` i provozní směrnice `AGENTS.md` na Zadání B (Petr Doležal, Dřevěnka s.r.o.).
   - Vyřešeno všech 5 otevřených bodů klienta v sekci ADR (ADR 1–5): dvoustavová evidence zásob, okamžité odmítnutí při nedostatku, zákaz záporného stavu s modulem inventury, varianty káči v různých barvách, změna objednávky do expedice.

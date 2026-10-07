@@ -1,7 +1,7 @@
 """
 Doménový model pro produkty, varianty a kategorie hraček (Dřevěnka s.r.o.).
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 import uuid
 

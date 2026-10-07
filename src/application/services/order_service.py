@@ -6,8 +6,8 @@ Implementuje klíčové požadavky klienta:
   - Pravidlo klienta: Cena v objednávce se nesmí zpětně změnit při úpravě ceníku.
   - Otevřený bod 2: Dvoustavová evidence – rezervace při příjmu objednávky, fyzický odpis při expedici.
 """
+from __future__ import annotations
 from datetime import datetime
-from typing import List, Optional
 import uuid
 from sqlalchemy.orm import Session
 
@@ -26,7 +26,7 @@ from src.application.dto.inventory_dto import OrderCreateDTO, OrderResponseDTO, 
 
 class OrderRejectionException(Exception):
     """Výjimka při zamítnutí objednávky z důvodu nedostatku zásob."""
-    def __init__(self, message: str, missing_items: List[str]):
+    def __init__(self, message: str, missing_items: list[str]):
         super().__init__(message)
         self.missing_items = missing_items
 
@@ -234,8 +234,8 @@ class OrderService:
         self.db.refresh(order)
         return order
 
-    def get_orders(self, limit: int = 50) -> List[OrderModel]:
+    def get_orders(self, limit: int = 50) -> list[OrderModel]:
         return self.db.query(OrderModel).order_by(OrderModel.order_date.desc()).limit(limit).all()
 
-    def get_order_by_id(self, order_id: str) -> Optional[OrderModel]:
+    def get_order_by_id(self, order_id: str) -> OrderModel | None:
         return self.db.query(OrderModel).filter(OrderModel.id == order_id).first()

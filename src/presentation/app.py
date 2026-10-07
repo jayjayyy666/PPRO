@@ -31,6 +31,7 @@ from src.application.services.reporting_service import ReportingService
 from src.application.dto.inventory_dto import (
     ProductCreateDTO,
     ProductResponseDTO,
+    OrderItemCreateDTO,
     OrderCreateDTO,
     OrderResponseDTO,
     StockTransferDTO,
@@ -197,7 +198,6 @@ def handle_create_order(
 ):
     """Zpracování nové objednávky s přísnou kontrolou a odmítnutím při nedostatku."""
     order_service = OrderService(db)
-    from src.application.dto.inventory_dto import OrderItemCreateDTO
 
     order_in = OrderCreateDTO(
         customer_name=customer_name,

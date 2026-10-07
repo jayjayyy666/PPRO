@@ -3,7 +3,7 @@ DTO objekty pro aplikační vrstvu (Pydantic modely pro validaci a API).
 """
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field
 
 
 class CategoryDTO(BaseModel):
@@ -61,7 +61,7 @@ class OrderItemCreateDTO(BaseModel):
 
 class OrderCreateDTO(BaseModel):
     customer_name: str = Field(..., description="Jméno a příjmení zákazníka")
-    customer_email: EmailStr = Field(..., description="E-mail zákazníka")
+    customer_email: str = Field(..., description="E-mail zákazníka")
     customer_phone: str = Field("", description="Telefon zákazníka")
     customer_address: str = Field("", description="Doručovací adresa")
     items: List[OrderItemCreateDTO] = Field(..., min_length=1, description="Položky objednávky")

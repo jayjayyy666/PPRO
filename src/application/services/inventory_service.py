@@ -1,7 +1,8 @@
 """
 Aplikační služba pro správu skladových zásob, meziskladové převody a inventury.
 """
-from typing import List, Optional, Tuple
+
+from __future__ import annotations
 from sqlalchemy.orm import Session
 from src.domain.models import MovementType
 from src.infrastructure.models import (
@@ -21,7 +22,7 @@ class InventoryService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_warehouses(self) -> List[WarehouseModel]:
+    def get_warehouses(self) -> list[WarehouseModel]:
         return self.db.query(WarehouseModel).order_by(WarehouseModel.is_primary.desc()).all()
 
     def get_primary_warehouse(self) -> WarehouseModel:
@@ -30,7 +31,7 @@ class InventoryService:
             wh = self.db.query(WarehouseModel).first()
         return wh
 
-    def get_stock_item(self, warehouse_id: str, product_id: str) -> Optional[StockItemModel]:
+    def get_stock_item(self, warehouse_id: str, product_id: str) -> StockItemModel | None:
         return (
             self.db.query(StockItemModel)
             .filter(
@@ -61,7 +62,7 @@ class InventoryService:
         quantity: int,
         note: str = "",
         performed_by: str = "Petr Doležal",
-    ) -> Tuple[StockItemModel, StockItemModel]:
+    ) -> tuple[StockItemModel, StockItemModel]:
         """
         Přesun mezi sklady (požadavek klienta 6: zimní garáž -> Hradec).
         Atomická operace:
@@ -171,7 +172,7 @@ class InventoryService:
 
         return diff
 
-    def get_movements_history(self, limit: int = 100) -> List[StockMovementModel]:
+    def get_movements_history(self, limit: int = 100) -> list[StockMovementModel]:
         """Získání historie pohybů pro dohledání (požadavek 5: Kde je ta káča)."""
         return (
             self.db.query(StockMovementModel)

@@ -27,3 +27,16 @@ target/
 # Docker & lokální prostředí
 .env.local
 .env.*.local
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+*.db
+*.sqlite3

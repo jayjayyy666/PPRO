@@ -4,10 +4,10 @@ Implementuje:
   - Požadavek 7: Minimální zásoba a co doobjednat (Dashboard semafor: „Barevně, ať vidím, co hoří“).
   - Požadavek 8: Obrat po kategoriích za měsíc („Klient chce vědět, co ho živí“).
 """
+from __future__ import annotations
 from datetime import datetime
-from typing import Dict, List
 from sqlalchemy.orm import Session
-from sqlalchemy import func, extract
+from sqlalchemy import extract
 
 from src.infrastructure.models import (
     ProductModel,
@@ -15,7 +15,6 @@ from src.infrastructure.models import (
     CategoryModel,
     OrderModel,
     OrderItemModel,
-    ProductCategoryModel,
 )
 from src.domain.models import OrderStatus
 from src.application.dto.inventory_dto import LowStockAlertDTO, CategoryRevenueDTO
@@ -25,7 +24,7 @@ class ReportingService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_low_stock_alerts(self) -> List[LowStockAlertDTO]:
+    def get_low_stock_alerts(self) -> list[LowStockAlertDTO]:
         """
         Získá seznam produktů pro úvodní dashboard s barevným semaforem.
         ČERVENÁ: fyzický stav klesl POD minimum (hoří!).
@@ -71,7 +70,7 @@ class ReportingService:
         alerts.sort(key=lambda x: (0 if x.urgency_status == "RED" else 1, x.current_physical_stock))
         return alerts
 
-    def get_monthly_category_revenue(self, year: int, month: int) -> List[CategoryRevenueDTO]:
+    def get_monthly_category_revenue(self, year: int, month: int) -> list[CategoryRevenueDTO]:
         """
         Obrat po kategoriích za kalendářní měsíc (požadavek 8: „Klient chce vědět, co ho živí“).
         Počítá se z dokončených/odeslaných objednávek (nebo potvrzených v daném měsíci).
@@ -97,7 +96,7 @@ class ReportingService:
         )
 
         # Mapa tržeb podle ID produktu
-        product_stats: Dict[str, Dict] = {}
+        product_stats: dict[str, dict] = {}
         for p_id, qty, unit_price, o_id in items_query:
             if p_id not in product_stats:
                 product_stats[p_id] = {"quantity": 0, "revenue": 0.0, "orders": set()}
