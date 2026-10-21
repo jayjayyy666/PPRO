@@ -305,6 +305,11 @@ pytest -v
 
 ## 8. Deník změn a postup prací (Changelog)
 
+- **2026-10-21 (Optimalizace nasazení a vyřešení mezipaměti prohlížeče):**
+  - Vyřešena mezipaměť prohlížeče (browser cache) zavedením parametru verze pro statické styly (`style.css?v=3`) v `src/presentation/templates/base.html`, což zajišťuje okamžité načtení nového vizuálního rozvržení bez nutnosti ručního promazávání mezipaměti uživatelem.
+  - V `docker-compose.yml` přidán live volume mount `./src:/app/src` do webového kontejneru pro okamžitou synchronizaci kódu a šablon při vývoji.
+  - Vykreslení nového UI úspěšně ověřeno přímo z běžícího kontejneru přes bezhlavý prohlížeč.
+
 - **2026-10-21 (Oprava Docker buildu a spuštění kontejnerů):**
   - Opraven `Dockerfile`: odstraněn krok `apt-get install build-essential libpq-dev`, který selhával na nekonzistenci balíčků v Debian repositáři; projekt využívá `psycopg2-binary`, který obsahuje předkompilované knihovny libpq, takže systémová kompilace není potřeba.
   - Vytvořen `.dockerignore` pro optimalizaci kontextu Docker sestavení (vyloučeny lokální virtuální prostředí `.venv`, cache, git apod.).

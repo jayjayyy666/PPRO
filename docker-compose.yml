@@ -23,6 +23,8 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
+    volumes:
+      - ./src:/app/src
     environment:
       DATABASE_URL: postgresql://drevenka_user:drevenka_secure_password@db:5432/drevenka
       SQL_ECHO: "false"
