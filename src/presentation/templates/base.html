@@ -3,49 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Dřevěnka s.r.o. – Skladový systém{% endblock %}</title>
+  <meta name="description" content="Skladový a expediční systém Dřevěnka s.r.o. – zásoby, objednávky a převody mezi sklady Hradec Králové a Třebechovice.">
+  <title>{% block title %}Skladový systém{% endblock %} · Dřevěnka</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header>
-    <div class="nav-container">
-      <a href="/" class="brand">
-        <span class="brand-icon">🪵</span>
-        <div class="brand-text">
-          <h1>Dřevěnka s.r.o.</h1>
-          <p>Skladový systém • Petr Doležal</p>
-        </div>
+  <div class="app">
+    <aside class="sidebar">
+      <a href="/" class="brand" id="nav-brand">
+        <span class="brand-mark">DŘ</span>
+        <span class="brand-text">
+          <span class="brand-name">Dřevěnka s.r.o.</span><br>
+          <span class="brand-sub">Skladový systém</span>
+        </span>
       </a>
-      <nav>
-        <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">🔥 Nástěnka (Co hoří)</a>
-        <a href="/products" class="nav-link {% if active_page == 'products' %}active{% endif %}">📦 Produkty a zásoby</a>
-        <a href="/orders" class="nav-link {% if active_page == 'orders' %}active{% endif %}">🛒 Objednávky</a>
-        <a href="/transfer" class="nav-link {% if active_page == 'transfer' %}active{% endif %}">🚚 Převod mezi sklady</a>
-        <a href="/movements" class="nav-link {% if active_page == 'movements' %}active{% endif %}">📜 Pohyby na skladě</a>
-        <a href="/reports" class="nav-link {% if active_page == 'reports' %}active{% endif %}">📊 Měsíční obrat</a>
-        <a href="/docs" target="_blank" class="nav-link">⚡ API Docs</a>
+
+      <nav class="nav-section" aria-label="Provoz">
+        <div class="nav-heading">Provoz</div>
+        <a href="/" id="nav-dashboard" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+          Přehled
+        </a>
+        <a href="/orders" id="nav-orders" class="nav-link {% if active_page == 'orders' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Objednávky
+        </a>
+        <a href="/products" id="nav-products" class="nav-link {% if active_page == 'products' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg>
+          Produkty
+        </a>
+        <a href="/transfer" id="nav-transfer" class="nav-link {% if active_page == 'transfer' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg>
+          Převody
+        </a>
+        <a href="/movements" id="nav-movements" class="nav-link {% if active_page == 'movements' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+          Skladové pohyby
+        </a>
       </nav>
-    </div>
-  </header>
 
-  <main class="container">
-    {% if error %}
-    <div class="flash-msg flash-error">
-      <strong>⚠️ Chyba:</strong> {{ error }}
-    </div>
-    {% endif %}
-    {% if success %}
-    <div class="flash-msg flash-success">
-      <strong>✅ Úspěch:</strong> {{ success }}
-    </div>
-    {% endif %}
+      <nav class="nav-section" aria-label="Analýzy">
+        <div class="nav-heading">Analýzy</div>
+        <a href="/reports" id="nav-reports" class="nav-link {% if active_page == 'reports' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15v2"/><path d="M12 10v7"/><path d="M17 6v11"/></svg>
+          Obrat po kategoriích
+        </a>
+        <a href="/docs" id="nav-api" target="_blank" rel="noopener" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>
+          REST API
+        </a>
+      </nav>
 
-    {% block content %}{% endblock %}
-  </main>
+      <div class="sidebar-footer">
+        Přihlášen: Petr Doležal<br>
+        PPRO · FIM UHK 2026/27 ·
+        <a href="https://github.com/jayjayyy666/PPRO" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </aside>
 
-  <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-color); background: #ffffff; margin-top: auto;">
-    <p><strong>Dřevěnka s.r.o.</strong> – Skladový systém dřevěných hraček pro e-shop • Hradec Králové & Třebechovice pod Orebem</p>
-    <p style="margin-top: 0.35rem;">Semestrální projekt PPRO • FIM UHK 2026/2027 • <a href="https://github.com/jayjayyy666/PPRO.git" target="_blank" style="color: var(--primary-color);">GitHub repozitář</a></p>
-  </footer>
+    <main class="main">
+      <div class="page {% block page_class %}{% endblock %}">
+        {% if error %}
+        <div class="banner banner-critical" role="alert">
+          <div><span class="banner-title">Akci nelze provést.</span> {{ error }}</div>
+        </div>
+        {% endif %}
+        {% if success %}
+        <div class="banner banner-success" role="status">
+          <div>{{ success }}</div>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
 </body>
 </html>

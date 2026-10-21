@@ -101,7 +101,7 @@ Projekt beze zbytku naplňuje všechna kritéria společného minima pro předm�
 
 | Požadavek minima | Způsob realizace v projektu Dřevěnka s.r.o. |
 | :--- | :--- |
-| **Technologický stack (Python)** | **Backend:** Python 3.11+, FastAPI (asynchronní i synchronní REST API, automatická OpenAPI dokumentace).<br>**Prezentační vrstva:** Jinja2 serverové šablony + Vanilla CSS (optimalizováno pro dotykové mobily skladníků).<br>**ORM & Datová vrstva:** SQLAlchemy 2.0 (typované deklarativní mapování `Mapped[...]` / `mapped_column`, ovladač `postgresql+psycopg2`, časová razítka v UTC s časovou zónou), Pydantic v2 (DTO & validace).<br>**Relační DB:** PostgreSQL (v produkci/Dockeru) / SQLite (lokální rychlé testy).<br>**Testy:** pytest (unit & integrační testy). |
+| **Technologický stack (Python)** | **Backend:** Python 3.11+, FastAPI (asynchronní i synchronní REST API, automatická OpenAPI dokumentace).<br>**Prezentační vrstva:** Jinja2 serverové šablony + Vanilla CSS ve stylu administračních rozhraní (Shopify Admin / Polaris, Stripe Dashboard): boční navigace, neutrální paleta, systémové písmo, kompaktní tabulky, bez emoji; na telefonu se navigace mění na horní lištu.<br>**ORM & Datová vrstva:** SQLAlchemy 2.0 (typované deklarativní mapování `Mapped[...]` / `mapped_column`, ovladač `postgresql+psycopg2`, časová razítka v UTC s časovou zónou), Pydantic v2 (DTO & validace).<br>**Relační DB:** PostgreSQL (v produkci/Dockeru) / SQLite (lokální rychlé testy).<br>**Testy:** pytest (unit & integrační testy). |
 | **3 vrstvy se závislostmi jedním směrem** | 1. **Prezentační vrstva (`src/presentation/`):** FastAPI webové routy, Jinja2 šablony, CSS assety, REST API.<br>2. **Aplikační/Doménová vrstva (`src/domain/`, `src/application/`):** Doménové modely, `InventoryService`, `OrderService`, `ReportingService`.<br>3. **Datová/Infrastrukturní vrstva (`src/infrastructure/`):** SQLAlchemy ORM modely, DB engine, seed skript pro 400 hraček. |
 | **Relační databáze v Dockeru** | PostgreSQL běžící v kontejneru v rámci Docker Compose sítě (`drevenka_postgres`). |
 | **Databázová integrita** | Integritní omezení `CHECK (physical_quantity >= 0)`, cizí klíče a unikátní indexy pro SKU. |
@@ -304,6 +304,13 @@ pytest -v
 ---
 
 ## 8. Deník změn a postup prací (Changelog)
+
+- **2026-10-21 (Přepracování vzhledu webového rozhraní):**
+  - Nový vizuální styl inspirovaný Shopify Admin (Polaris), Stripe Dashboard a GitHub: boční navigace se seskupením (Provoz / Analýzy), neutrální šedá paleta, systémové písmo, kompaktní tabulky s čísly zarovnanými doprava a SKU v neproporcionálním písmu.
+  - Odstraněny všechny emoji z šablon; ikony v navigaci jsou jednoduché čárové SVG, stavy jsou textové štítky s barevnou tečkou.
+  - Zkráceny a zvěcněny texty (např. „Přehled“ místo „Nástěnka (Co hoří)“), odstraněny inline styly, formuláře mají propojené `label`/`id` a patičku s akcemi.
+  - Přidány Jinja filtry `num` a `czk` (`src/presentation/app.py`) pro české formátování čísel a částek (1 234,50 Kč).
+  - Jediný `<h1>` na stránce je nyní titulek stránky, doplněn `meta description`.
 
 - **2026-10-21 (Modernizace ORM, časových razítek a kompatibility knihoven):**
   - ORM modely v `src/infrastructure/models.py` převedeny na typovaný styl SQLAlchemy 2.0 (`Mapped[...]`, `mapped_column`, typované `relationship`) – lepší statická kontrola typů v IDE.

@@ -67,6 +67,23 @@ if os.path.exists(STATIC_DIR):
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 
+def _format_number(value: float | int | None, decimals: int = 0) -> str:
+    """Formát čísla dle české konvence: mezera jako oddělovač tisíců, čárka jako desetinná."""
+    if value is None:
+        return "0"
+    formatted = f"{value:,.{decimals}f}"
+    return formatted.replace(",", "\u00a0").replace(".", ",")
+
+
+def _format_czk(value: float | int | None, decimals: int = 2) -> str:
+    """Peněžní částka v Kč, např. 1 234,50 Kč."""
+    return f"{_format_number(value, decimals)}\u00a0Kč"
+
+
+templates.env.filters["num"] = _format_number
+templates.env.filters["czk"] = _format_czk
+
+
 # ============================================================================
 # WEBOVÉ ROZHRANÍ (JINJA2 ŠABLONY)
 # ============================================================================

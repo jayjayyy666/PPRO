@@ -1,74 +1,69 @@
 {% extends "base.html" %}
 
-{% block title %}Převod mezi sklady – Dřevěnka s.r.o.{% endblock %}
+{% block title %}Převod mezi sklady{% endblock %}
+
+{% block page_class %}page-narrow{% endblock %}
 
 {% block content %}
-<div style="margin-bottom: 1.5rem;">
-  <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">Převod zboží mezi sklady (Převodka)</h2>
-  <p style="color: var(--text-muted);">Evidence převozu hraček ze zimní garáže v Třebechovicích do centrálního skladu v Hradci Králové (požadavek 6).</p>
-</div>
-
-<div class="card" style="max-width: 700px; margin: 0 auto;">
-  <div class="card-title">
-    <span>🚚 Vystavit meziskladový přesun</span>
+<header class="page-header">
+  <div>
+    <h1 class="page-title">Převod mezi sklady</h1>
+    <p class="page-subtitle">Přesun zboží z garáže v Třebechovicích do skladu v Hradci Králové nebo opačně.</p>
   </div>
+</header>
 
-  <form method="post" action="/transfer">
-    <div class="form-group">
-      <label>Vyberte dřevěnou hračku *</label>
-      <select name="product_id" required>
-        <option value="">-- Zvolte produkt --</option>
-        {% for prod in products %}
-          <option value="{{ prod.id }}" {% if selected_product_id == prod.id %}selected{% endif %}>
-            {{ prod.code }} – {{ prod.name }}
-          </option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-      <div class="form-group">
-        <label>Zdrojový sklad (Odkud se veze) *</label>
-        <select name="from_warehouse_id" required>
-          {% for wh in warehouses %}
-            <!-- Výchozí nastavení: garáž Třebechovice jako zdroj -->
-            <option value="{{ wh.id }}" {% if not wh.is_primary %}selected{% endif %}>{{ wh.name }}</option>
+<section class="card">
+  <form method="post" action="/transfer" id="form-transfer">
+    <div class="card-body">
+      <div class="field">
+        <label for="product_id" class="required">Produkt</label>
+        <select id="product_id" name="product_id" required>
+          <option value="">Vyberte produkt</option>
+          {% for prod in products %}
+            <option value="{{ prod.id }}" {% if selected_product_id == prod.id %}selected{% endif %}>{{ prod.code }} – {{ prod.name }}</option>
           {% endfor %}
         </select>
       </div>
 
-      <div class="form-group">
-        <label>Cílový sklad (Kam se veze) *</label>
-        <select name="to_warehouse_id" required>
-          {% for wh in warehouses %}
-            <!-- Výchozí nastavení: Hradec jako cíl -->
-            <option value="{{ wh.id }}" {% if wh.is_primary %}selected{% endif %}>{{ wh.name }}</option>
-          {% endfor %}
-        </select>
+      <div class="form-grid cols-2" style="margin-bottom: 12px;">
+        <div class="field">
+          <label for="from_warehouse_id" class="required">Ze skladu</label>
+          <select id="from_warehouse_id" name="from_warehouse_id" required>
+            {% for wh in warehouses %}
+              <option value="{{ wh.id }}" {% if not wh.is_primary %}selected{% endif %}>{{ wh.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="to_warehouse_id" class="required">Do skladu</label>
+          <select id="to_warehouse_id" name="to_warehouse_id" required>
+            {% for wh in warehouses %}
+              <option value="{{ wh.id }}" {% if wh.is_primary %}selected{% endif %}>{{ wh.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="quantity" class="required">Množství (ks)</label>
+        <input type="number" id="quantity" name="quantity" min="1" value="10" required>
+        <p class="help-text">Nelze převést více kusů, než je ve zdrojovém skladu volně k dispozici.</p>
+      </div>
+
+      <div class="field">
+        <label for="note">Poznámka</label>
+        <input type="text" id="note" name="note">
+      </div>
+
+      <div class="field" style="margin-bottom: 0;">
+        <label for="performed_by" class="required">Provedl</label>
+        <input type="text" id="performed_by" name="performed_by" value="Petr Doležal" required>
       </div>
     </div>
-
-    <div class="form-group">
-      <label>Počet kusů k převozu *</label>
-      <input type="number" name="quantity" min="1" value="10" required>
-      <small style="color: var(--text-muted);">Pravidlo: Nelze převést více kusů, než je volně k dispozici ve zdrojovém skladu.</small>
-    </div>
-
-    <div class="form-group">
-      <label>Důvod / Poznámka</label>
-      <input type="text" name="note" placeholder="Např. Sezónní naskladnění před Vánoci, závoz autem">
-    </div>
-
-    <div class="form-group">
-      <label>Zodpovědná osoba</label>
-      <input type="text" name="performed_by" value="Petr Doležal" required>
-    </div>
-
-    <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-      <button type="submit" class="btn btn-primary" style="font-size: 1rem; padding: 0.75rem 1.75rem;">
-        🚚 Potvrdit a provést přesun
-      </button>
+    <div class="form-actions">
+      <a href="/" class="btn btn-secondary">Zrušit</a>
+      <button type="submit" id="btn-submit-transfer" class="btn btn-primary">Provést převod</button>
     </div>
   </form>
-</div>
+</section>
 {% endblock %}

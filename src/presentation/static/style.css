@@ -1,420 +1,856 @@
-/* Dřevěnka s.r.o. - Design System & Modern Responsive UI */
+/*
+ * Dřevěnka s.r.o. – skladový systém
+ * Vizuální styl vychází z administračních rozhraní typu Shopify Admin (Polaris),
+ * Stripe Dashboard a GitHub: neutrální paleta, systémové písmo, kompaktní tabulky,
+ * boční navigace a střídmé stavové štítky.
+ */
+
 :root {
-  --primary-color: #8c531b;
-  --primary-hover: #6d3f12;
-  --primary-light: #fef8ee;
-  --primary-border: #e8d7be;
-  
-  --bg-main: #fbf9f5;
-  --card-bg: #ffffff;
-  --text-main: #2b231d;
-  --text-muted: #6e645a;
-  --border-color: #e5ded3;
+  /* Plochy */
+  --bg: #f1f1f1;
+  --surface: #ffffff;
+  --surface-muted: #f7f7f7;
+  --surface-hover: #fafafa;
+  --sidebar-bg: #ebebeb;
 
-  /* Barevný semafor („Ať vidím, co hoří!“) */
-  --alert-red-bg: #fde8e8;
-  --alert-red-border: #f8b4b4;
-  --alert-red-text: #9b1c1c;
+  /* Text */
+  --text: #303030;
+  --text-strong: #1a1a1a;
+  --text-subdued: #616161;
+  --text-disabled: #8a8a8a;
 
-  --alert-yellow-bg: #fef08a;
-  --alert-yellow-border: #fde047;
-  --alert-yellow-text: #713f12;
+  /* Linky */
+  --border: #e3e3e3;
+  --border-strong: #cccccc;
+  --border-input: #8a8a8a;
 
-  --alert-green-bg: #def7ec;
-  --alert-green-border: #bcf0da;
-  --alert-green-text: #03543f;
+  /* Akce */
+  --primary: #303030;
+  --primary-hover: #1a1a1a;
+  --link: #005bd3;
+  --focus: #005bd3;
 
-  --badge-blue-bg: #e1effe;
-  --badge-blue-text: #1e429f;
+  /* Stavy */
+  --success-bg: #cdfee1;
+  --success-text: #0c5132;
+  --success-dot: #29845a;
 
+  --critical-bg: #fedad9;
+  --critical-text: #8e1f0b;
+  --critical-dot: #e51c00;
+
+  --warning-bg: #ffef9d;
+  --warning-text: #4f4700;
+  --warning-dot: #b28400;
+
+  --info-bg: #e0f0ff;
+  --info-text: #00527c;
+  --info-dot: #0094d5;
+
+  --neutral-bg: #e3e3e3;
+  --neutral-text: #303030;
+
+  /* Rozměry */
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 12px rgba(43,35,29,0.08);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --sidebar-w: 240px;
+
+  --shadow-card: 0 1px 0 rgba(26, 26, 26, 0.07), 0 1px 2px rgba(26, 26, 26, 0.06);
+  --shadow-btn: 0 1px 0 rgba(0, 0, 0, 0.05);
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  line-height: 1.5;
-  font-size: 15px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
-/* Header & Navigace */
-header {
-  background: #ffffff;
-  border-bottom: 2px solid var(--border-color);
+body {
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------------ */
+/* Rozvržení                                                          */
+/* ------------------------------------------------------------------ */
+
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 100;
-  box-shadow: var(--shadow-sm);
-}
-
-.nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0.75rem 1.25rem;
+  height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  padding: 12px 8px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 10px;
+  padding: 6px 8px 14px;
+  color: var(--text-strong);
+}
+
+.brand:hover {
   text-decoration: none;
-  color: var(--primary-color);
 }
 
-.brand-icon {
-  font-size: 1.75rem;
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-weight: 650;
+  font-size: 13px;
+  letter-spacing: 0.02em;
 }
 
-.brand-text h1 {
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--text-main);
+.brand-name {
+  font-weight: 650;
+  font-size: 14px;
+  line-height: 18px;
 }
 
-.brand-text p {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  font-weight: 500;
+.brand-sub {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-subdued);
 }
 
-nav {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+.nav-section {
+  margin-top: 12px;
+}
+
+.nav-heading {
+  padding: 0 10px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-subdued);
 }
 
 .nav-link {
-  text-decoration: none;
-  padding: 0.5rem 0.85rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  color: var(--text-muted);
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 10px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--radius);
+  color: var(--text);
+  font-weight: 550;
 }
 
-.nav-link:hover, .nav-link.active {
-  color: var(--primary-color);
-  background-color: var(--primary-light);
+.nav-link svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  stroke: var(--text-subdued);
 }
 
-.container {
+.nav-link:hover {
+  background: rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  background: var(--surface);
+  color: var(--text-strong);
+  font-weight: 650;
+  box-shadow: var(--shadow-card);
+}
+
+.nav-link.active svg {
+  stroke: var(--text-strong);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 12px 10px 4px;
+  border-top: 1px solid var(--border-strong);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-subdued);
+}
+
+.sidebar-footer a {
+  color: var(--text-subdued);
+  text-decoration: underline;
+}
+
+.main {
+  min-width: 0;
+  padding: 24px 32px 48px;
+}
+
+.page {
   max-width: 1200px;
-  margin: 1.5rem auto;
-  padding: 0 1.25rem;
-  flex: 1;
-  width: 100%;
+  margin: 0 auto;
 }
 
-/* Karty a Panely */
+.page-narrow {
+  max-width: 720px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Hlavička stránky                                                   */
+/* ------------------------------------------------------------------ */
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 650;
+  color: var(--text-strong);
+}
+
+.page-subtitle {
+  margin-top: 2px;
+  color: var(--text-subdued);
+}
+
+.page-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Karty                                                              */
+/* ------------------------------------------------------------------ */
+
 .card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-sm);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  overflow: hidden;
 }
 
-.card-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+.card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.75rem;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
 }
 
-/* Statistiky a Karty v mřížce */
-.grid-stats {
+.card-title {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text-strong);
+}
+
+.card-meta {
+  color: var(--text-subdued);
+}
+
+.card-body {
+  padding: 16px;
+}
+
+.card-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-subdued);
+}
+
+.card-empty strong {
+  display: block;
+  color: var(--text-strong);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Metriky                                                            */
+/* ------------------------------------------------------------------ */
+
+.metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 16px;
+  overflow: hidden;
 }
 
-.stat-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-sm);
+.metric {
+  padding: 14px 16px;
+  border-right: 1px solid var(--border);
 }
 
-.stat-label {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
+.metric:last-child {
+  border-right: none;
 }
 
-.stat-value {
-  font-size: 1.85rem;
-  font-weight: 800;
-  color: var(--primary-color);
-  margin-top: 0.25rem;
+.metric-label {
+  color: var(--text-subdued);
+  font-weight: 550;
 }
 
-.stat-sub {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-top: 0.2rem;
+.metric-value {
+  margin-top: 4px;
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 650;
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Semafor (Dashboard) */
-.alert-banner {
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+.metric-value.is-critical {
+  color: var(--critical-text);
 }
 
-.alert-banner.red {
-  background-color: var(--alert-red-bg);
-  border: 2px solid var(--alert-red-border);
-  color: var(--alert-red-text);
+.metric-hint {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-subdued);
 }
 
-.alert-banner.yellow {
-  background-color: var(--alert-yellow-bg);
-  border: 2px solid var(--alert-yellow-border);
-  color: var(--alert-yellow-text);
-}
+/* ------------------------------------------------------------------ */
+/* Tabulky                                                            */
+/* ------------------------------------------------------------------ */
 
-.alert-banner.green {
-  background-color: var(--alert-green-bg);
-  border: 2px solid var(--alert-green-border);
-  color: var(--alert-green-text);
-}
-
-.alert-icon {
-  font-size: 1.75rem;
-  line-height: 1;
-}
-
-/* Tabulky */
-.table-wrapper {
+.table-scroll {
   overflow-x: auto;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background: #ffffff;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 0.9rem;
 }
 
 th {
-  background-color: #f7f4ee;
-  color: var(--text-muted);
-  font-weight: 700;
-  padding: 0.75rem 1rem;
-  border-bottom: 2px solid var(--border-color);
+  background: var(--surface-muted);
+  color: var(--text-subdued);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
 
 td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-color);
-  vertical-align: middle;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
 }
 
-tr:hover td {
-  background-color: #fcfbf9;
+tbody tr:last-child td {
+  border-bottom: none;
 }
 
-/* Odznaky (Badges) */
+tbody tr:hover td {
+  background: var(--surface-hover);
+}
+
+th:first-child,
+td:first-child {
+  padding-left: 16px;
+}
+
+th:last-child,
+td:last-child {
+  padding-right: 16px;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.center {
+  text-align: center;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.strong {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.muted {
+  color: var(--text-subdued);
+}
+
+.small {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.text-critical {
+  color: var(--critical-text);
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Štítky                                                             */
+/* ------------------------------------------------------------------ */
+
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.6rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  gap: 6px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 550;
+  white-space: nowrap;
+  background: var(--neutral-bg);
+  color: var(--neutral-text);
 }
 
-.badge-red {
-  background: var(--alert-red-bg);
-  color: var(--alert-red-text);
-  border: 1px solid var(--alert-red-border);
+.badge.dot::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
-.badge-yellow {
-  background: var(--alert-yellow-bg);
-  color: var(--alert-yellow-text);
-  border: 1px solid var(--alert-yellow-border);
+.badge-success { background: var(--success-bg); color: var(--success-text); }
+.badge-critical { background: var(--critical-bg); color: var(--critical-text); }
+.badge-warning { background: var(--warning-bg); color: var(--warning-text); }
+.badge-info { background: var(--info-bg); color: var(--info-text); }
+
+.badge-success.dot::before { background: var(--success-dot); }
+.badge-critical.dot::before { background: var(--critical-dot); }
+.badge-warning.dot::before { background: var(--warning-dot); }
+.badge-info.dot::before { background: var(--info-dot); }
+
+.tag {
+  display: inline-block;
+  padding: 0 6px;
+  margin: 0 4px 4px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-subdued);
+  white-space: nowrap;
 }
 
-.badge-green {
-  background: var(--alert-green-bg);
-  color: var(--alert-green-text);
-  border: 1px solid var(--alert-green-border);
-}
+/* ------------------------------------------------------------------ */
+/* Tlačítka                                                           */
+/* ------------------------------------------------------------------ */
 
-.badge-blue {
-  background: var(--badge-blue-bg);
-  color: var(--badge-blue-text);
-}
-
-.badge-tag {
-  background: #f0ebe1;
-  color: #534538;
-  margin-right: 0.25rem;
-  margin-bottom: 0.2rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
-}
-
-/* Tlačítka */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.6rem 1.15rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
-  border: none;
+  border: 1px solid transparent;
+  transition: background-color 0.1s ease, border-color 0.1s ease;
+}
+
+.btn:hover {
   text-decoration: none;
-  transition: all 0.2s ease;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
+  background: var(--primary);
   color: #ffffff;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1), var(--shadow-btn);
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-hover);
+  background: var(--primary-hover);
 }
 
 .btn-secondary {
-  background-color: #ede5d8;
-  color: var(--text-main);
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-btn);
 }
 
 .btn-secondary:hover {
-  background-color: #dfd4c3;
+  background: var(--surface-muted);
 }
 
-.btn-danger {
-  background-color: #dc2626;
-  color: #ffffff;
+.btn-plain {
+  background: transparent;
+  color: var(--link);
+  padding: 0 6px;
 }
 
-.btn-danger:hover {
-  background-color: #b91c1c;
+.btn-plain:hover {
+  text-decoration: underline;
+}
+
+.btn-critical {
+  background: var(--surface);
+  color: var(--critical-text);
+  border-color: var(--border-strong);
+}
+
+.btn-critical:hover {
+  background: var(--critical-bg);
 }
 
 .btn-sm {
-  padding: 0.35rem 0.65rem;
-  font-size: 0.8rem;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
 }
 
-/* Formuláře */
-.form-group {
-  margin-bottom: 1.25rem;
+.btn-group {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.btn-group form {
+  display: inline;
+}
+
+/* ------------------------------------------------------------------ */
+/* Formuláře                                                          */
+/* ------------------------------------------------------------------ */
+
+.form-grid {
+  display: grid;
+  gap: 12px 16px;
+}
+
+.form-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.form-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.form-grid.cols-product { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); }
+
+.field {
+  margin-bottom: 12px;
+}
+
+.form-grid .field {
+  margin-bottom: 0;
+}
+
+.form-section + .form-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.form-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-subdued);
+  margin-bottom: 8px;
 }
 
 label {
   display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 0.35rem;
+  margin-bottom: 4px;
+  font-weight: 550;
+  color: var(--text);
 }
 
-input, select, textarea {
+.required::after {
+  content: " *";
+  color: var(--critical-text);
+}
+
+input,
+select,
+textarea {
   width: 100%;
-  padding: 0.65rem 0.85rem;
-  font-size: 0.95rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  background-color: #ffffff;
-  color: var(--text-main);
-  transition: border-color 0.2s;
+  height: 32px;
+  padding: 0 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-strong);
+  background: var(--surface);
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius);
 }
 
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(140, 83, 27, 0.15);
+textarea {
+  height: auto;
+  padding: 6px 10px;
 }
 
-/* Flash zprávy */
-.flash-msg {
-  padding: 1rem 1.25rem;
-  border-radius: var(--radius-sm);
-  margin-bottom: 1.5rem;
-  font-weight: 500;
+input::placeholder {
+  color: var(--text-disabled);
 }
 
-.flash-error {
-  background: var(--alert-red-bg);
-  border: 1px solid var(--alert-red-border);
-  color: var(--alert-red-text);
+input:hover,
+select:hover {
+  background: var(--surface-muted);
 }
 
-.flash-success {
-  background: var(--alert-green-bg);
-  border: 1px solid var(--alert-green-border);
-  color: var(--alert-green-text);
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  background: var(--surface);
 }
 
-/* Mobilní ergonomie */
-@media (max-width: 768px) {
-  .nav-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  nav {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-  }
-  .btn {
-    width: 100%;
-    padding: 0.85rem 1rem;
-    font-size: 1rem;
-  }
-  .grid-stats {
+.help-text {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-subdued);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-muted);
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar .grow {
+  flex: 1 1 260px;
+}
+
+.toolbar select {
+  width: auto;
+  min-width: 180px;
+}
+
+.inline-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.inline-form select {
+  width: auto;
+}
+
+/* ------------------------------------------------------------------ */
+/* Oznámení                                                           */
+/* ------------------------------------------------------------------ */
+
+.banner {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+}
+
+.banner::before {
+  content: "";
+  flex-shrink: 0;
+  width: 4px;
+  border-radius: 2px;
+  align-self: stretch;
+}
+
+.banner-title {
+  font-weight: 650;
+}
+
+.banner-critical {
+  background: #fff4f4;
+  border-color: #fec1bf;
+  color: var(--critical-text);
+}
+
+.banner-critical::before {
+  background: var(--critical-dot);
+}
+
+.banner-success {
+  background: #f1fdf6;
+  border-color: #a4e8c2;
+  color: var(--success-text);
+}
+
+.banner-success::before {
+  background: var(--success-dot);
+}
+
+/* ------------------------------------------------------------------ */
+/* Ukazatel podílu                                                    */
+/* ------------------------------------------------------------------ */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--neutral-bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--primary);
+}
+
+.bar-value {
+  min-width: 48px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-subdued);
+}
+
+/* ------------------------------------------------------------------ */
+/* Responzivita – telefon skladníka                                   */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 960px) {
+  .app {
     grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .brand {
+    padding: 0 8px 0 4px;
+  }
+
+  .brand-text,
+  .nav-heading,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .nav-section {
+    display: flex;
+    gap: 4px;
+    margin-top: 0;
+  }
+
+  .nav-link {
+    white-space: nowrap;
+  }
+
+  .main {
+    padding: 16px;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metric:nth-child(2) {
+    border-right: none;
+  }
+
+  .metric:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 640px) {
+  .form-grid.cols-2,
+  .form-grid.cols-3,
+  .form-grid.cols-product {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions .btn,
+  .page-actions .btn {
+    flex: 1;
+    height: 40px;
+  }
+
+  input,
+  select {
+    height: 40px;
+    font-size: 16px;
   }
 }

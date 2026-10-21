@@ -1,64 +1,62 @@
 {% extends "base.html" %}
 
-{% block title %}Nástěnka (Co hoří) – Dřevěnka s.r.o.{% endblock %}
+{% block title %}Přehled{% endblock %}
 
 {% block content %}
-<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+<header class="page-header">
   <div>
-    <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">Přehled zásob & co hoří</h2>
-    <p style="color: var(--text-muted);">Semafor minimálních zásob a okamžitý stav skladů v Hradci Králové a garáži v Třebechovicích.</p>
+    <h1 class="page-title">Přehled</h1>
+    <p class="page-subtitle">Stav zásob v Hradci Králové a v garáži v Třebechovicích.</p>
   </div>
-  <div>
-    <a href="/transfer" class="btn btn-secondary">🚚 Přenést zboží z garáže</a>
-    <a href="/orders#new-order" class="btn btn-primary">+ Zadat novou objednávku</a>
+  <div class="page-actions">
+    <a href="/transfer" id="btn-dashboard-transfer" class="btn btn-secondary">Převést z garáže</a>
+    <a href="/orders#new-order" id="btn-dashboard-new-order" class="btn btn-primary">Nová objednávka</a>
   </div>
-</div>
+</header>
 
-<!-- Souhrnné statistiky -->
-<div class="grid-stats">
-  <div class="stat-card">
-    <div class="stat-label">Položek v katalogu</div>
-    <div class="stat-value">{{ total_products_count }}</div>
-    <div class="stat-sub">Celkem aktivních dřevěných hraček</div>
+<section class="metrics" aria-label="Souhrn">
+  <div class="metric">
+    <div class="metric-label">Produkty v katalogu</div>
+    <div class="metric-value">{{ total_products_count|num }}</div>
+    <div class="metric-hint">aktivní položky</div>
   </div>
-  <div class="stat-card">
-    <div class="stat-label">Sklad Hradec Králové</div>
-    <div class="stat-value">{{ hradec_total_stock }} ks</div>
-    <div class="stat-sub">Připraveno k expedici</div>
+  <div class="metric">
+    <div class="metric-label">Sklad Hradec Králové</div>
+    <div class="metric-value">{{ hradec_total_stock|num }} ks</div>
+    <div class="metric-hint">k expedici</div>
   </div>
-  <div class="stat-card">
-    <div class="stat-label">Garáž Třebechovice</div>
-    <div class="stat-value">{{ garaz_total_stock }} ks</div>
-    <div class="stat-sub">Sezónní zásoby k převozu</div>
+  <div class="metric">
+    <div class="metric-label">Garáž Třebechovice</div>
+    <div class="metric-value">{{ garaz_total_stock|num }} ks</div>
+    <div class="metric-hint">sezónní zásoba</div>
   </div>
-  <div class="stat-card" style="border-left: 4px solid var(--alert-red-border);">
-    <div class="stat-label" style="color: var(--alert-red-text);">Kritické zásoby (Hoří)</div>
-    <div class="stat-value" style="color: var(--alert-red-text);">{{ red_alerts_count }}</div>
-    <div class="stat-sub">Produktů kleslo pod minimální limit</div>
+  <div class="metric">
+    <div class="metric-label">Pod minimem</div>
+    <div class="metric-value {% if red_alerts_count %}is-critical{% endif %}">{{ red_alerts_count|num }}</div>
+    <div class="metric-hint">kritické položky</div>
   </div>
-</div>
+</section>
 
-<!-- Barevný semafor - Co hoří -->
-<div class="card">
-  <div class="card-title">
-    <span>🔥 Seznam položek pod minimem (Nákupní a výrobní doporučení)</span>
-    <span class="badge badge-red">{{ low_stock_alerts|length }} položek k řešení</span>
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Položky k doplnění</h2>
+    <span class="card-meta">{{ low_stock_alerts|length }} položek</span>
   </div>
 
   {% if low_stock_alerts %}
-  <div class="table-wrapper">
+  <div class="table-scroll">
     <table>
       <thead>
         <tr>
           <th>Stav</th>
-          <th>Kód (SKU)</th>
-          <th>Název hračky</th>
+          <th>Kód</th>
+          <th>Produkt</th>
           <th>Kategorie</th>
-          <th style="text-align: right;">Fyzicky na skladě</th>
-          <th style="text-align: right;">Volno k prodeji</th>
-          <th style="text-align: right;">Minimální stav</th>
-          <th style="text-align: right;">Doporučeno vyrobit/koupit</th>
-          <th>Akce</th>
+          <th class="num">Fyzicky</th>
+          <th class="num">Volné</th>
+          <th class="num">Minimum</th>
+          <th class="num">Doplnit</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -66,30 +64,22 @@
         <tr>
           <td>
             {% if alert.urgency_status == 'RED' %}
-              <span class="badge badge-red">🔴 Hoří!</span>
+              <span class="badge badge-critical dot">Kritické</span>
             {% else %}
-              <span class="badge badge-yellow">🟡 Pozor</span>
+              <span class="badge badge-warning dot">Nízké</span>
             {% endif %}
           </td>
-          <td><strong>{{ alert.product_code }}</strong></td>
-          <td>{{ alert.product_name }}</td>
+          <td class="mono nowrap">{{ alert.product_code }}</td>
+          <td class="strong">{{ alert.product_name }}</td>
           <td>
-            {% for cat in alert.categories %}
-              <span class="badge-tag">{{ cat }}</span>
-            {% endfor %}
+            {% for cat in alert.categories %}<span class="tag">{{ cat }}</span>{% endfor %}
           </td>
-          <td style="text-align: right; font-weight: 700; {% if alert.current_physical_stock < alert.min_stock_level %}color: var(--alert-red-text);{% endif %}">
-            {{ alert.current_physical_stock }} ks
-          </td>
-          <td style="text-align: right;">{{ alert.current_available_stock }} ks</td>
-          <td style="text-align: right;">{{ alert.min_stock_level }} ks</td>
-          <td style="text-align: right; font-weight: 700; color: var(--primary-color);">
-            +{{ alert.recommended_reorder }} ks
-          </td>
-          <td>
-            <a href="/transfer?product_id={{ alert.product_id }}" class="btn btn-secondary btn-sm" title="Zkontrolovat zásoby v garáži a převézt">
-              Přenést
-            </a>
+          <td class="num {% if alert.current_physical_stock < alert.min_stock_level %}text-critical{% endif %}">{{ alert.current_physical_stock|num }}</td>
+          <td class="num">{{ alert.current_available_stock|num }}</td>
+          <td class="num muted">{{ alert.min_stock_level|num }}</td>
+          <td class="num strong">+{{ alert.recommended_reorder|num }}</td>
+          <td class="num">
+            <a href="/transfer?product_id={{ alert.product_id }}" class="btn btn-secondary btn-sm">Převést</a>
           </td>
         </tr>
         {% endfor %}
@@ -97,13 +87,10 @@
     </table>
   </div>
   {% else %}
-  <div class="alert-banner green">
-    <span class="alert-icon">✅</span>
-    <div>
-      <strong>Všechny zásoby jsou v pořádku!</strong>
-      <p>Aktuálně žádný z produktů neklesl pod nastavenou minimální hladinu.</p>
-    </div>
+  <div class="card-empty">
+    <strong>Žádná položka není pod minimem</strong>
+    Všechny produkty mají zásobu nad nastavenou minimální hladinou.
   </div>
   {% endif %}
-</div>
+</section>
 {% endblock %}
