@@ -310,6 +310,7 @@ pytest -v
   - V `docker-compose.yml` přidán live volume mount `./src:/app/src` do webového kontejneru pro okamžitou synchronizaci kódu a šablon při vývoji.
   - Vykreslení nového UI úspěšně ověřeno přímo z běžícího kontejneru přes bezhlavý prohlížeč.
   - V oficiálním Word dokumentu `PPRO_Dokumentace.docx` zaevidován nový požadavek klienta Z6 (odstranění emotikonů a redesign vzhledu).
+  - Aktualizována směrnice asistenta `AGENTS.md` (sekce 2.2 a 4) – zavedeno pravidlo automatického kompletního balíčku kroků při pokynu k pushi (zápis do docx, README, Docker a git push).
 
 - **2026-10-21 (Oprava Docker buildu a spuštění kontejnerů):**
   - Opraven `Dockerfile`: odstraněn krok `apt-get install build-essential libpq-dev`, který selhával na nekonzistenci balíčků v Debian repositáři; projekt využívá `psycopg2-binary`, který obsahuje předkompilované knihovny libpq, takže systémová kompilace není potřeba.

@@ -33,16 +33,26 @@ Tento dokument definuje závazná pravidla, zásady spolupráce a pracovní post
   git commit -m "feat(appointment): implementace validace prekryvu terminu a ordinacnich hodin"
   ```
 
-### 2.2 Zákaz samovolného `git push` (Explicit Push Approval)
-- **Kritické pravidlo:** Asistent **NIKDY nesmí** provést příkaz `git push` automaticky nebo bez předchozího explicitního pokynu uživatele.
-- **Postup:** Asistent kód připraví, otestuje, zapíše změny do dokumentace a provede lokální commit. Následně může uživatele informovat, že změny jsou připraveny k odeslání do vzdáleného repozitáře, ale samotný `git push` spustí **pouze tehdy, pokud uživatel výslovně napíše příkaz k odeslání** (např. „pushni to“, „proveď push“).
+### 2.2 Reakce na pokyn k pushi („pushni to“) – Automatický kompletní řetězec
+- **Kritické pravidlo:** Samotný `git push` se provádí **výhradně na explicitní pokyn uživatele** (např. „pushni to“, „proveď push“).
+- **Povinný automatický balíček kroků při pokynu k pushi:** Jakmile uživatel vydá pokyn k odeslání („pushni to“ / „pushni a zapiš“), asistent **automaticky v jednom kroku provede celý následující řetězec bez nutnosti dalšího vyzývání**:
+  1. **Oficiální Word dokumentace (`PPRO_Dokumentace.docx`):**
+     - Aktualizovat datum poslední úpravy v hlavičkové tabulce.
+     - Zapsat technická/návrhová rozhodnutí do tabulky *2. Rozhodnutí* (R...).
+     - Zapsat všechny nové požadavky, zadání úkolů od uživatele či změny klienta do tabulky *3. Změny požadované klientem* (Z...).
+  2. **Jediný zdroj pravdy (`README.md`):**
+     - Aktualizovat technický popis architektury, entit, rozhraní či testů.
+     - Přidat strukturovaný záznam do sekce *8. Deník změn a postup prací (Changelog)*.
+  3. **Aktualizace a ověření Dockeru:**
+     - Zajistit synchronizaci Docker prostředí (konfigurace `docker-compose.yml`, `Dockerfile`, `.dockerignore`, live volume mounty) a ověřit běh kontejnerů.
+  4. **Commit s přepínačem `-m`:**
+     - Zahrnout kód, `README.md` i `PPRO_Dokumentace.docx` do jednoho přehledného commitu dle Conventional Commits.
+  5. **Odeslání do vzdáleného repozitáře (`git push`):**
+     - Provést `git push` na GitHub a uživateli předložit stručný report o provedených krocích.
 
 ### 2.3 Povinná aktualizace dokumentace před každým commitem
-- **Pravidlo:** Před **každým** commitem se asistent musí ujistit, že:
-  1. Jsou v `README.md` zaevidována všechna relevantní rozhodnutí (kapitola *Rozhodnutí k otevřeným bodům*).
-  2. Je aktualizován technický popis architektury, entit, rozhraní či testů.
-  3. Je v `README.md` v sekci *Deník změn a postup prací (Changelog)* přidán záznam o provedených úpravách.
-- V repozitáři je nastaven Git hook (`.githooks/pre-commit` propojený do `.git/hooks/pre-commit`), který připomíná a kontroluje staging souboru `README.md` při změnách implementace.
+- **Pravidlo:** Žádný commit nesmí odejít bez aktualizace `README.md` (SSOT) a relevantních záznamů v `PPRO_Dokumentace.docx`.
+- V repozitáři je nastaven Git hook (`.githooks/pre-commit` propojený do `.git/hooks/pre-commit`), který kontroluje staging dokumentace před commitem.
 
 ---
 
@@ -66,11 +76,11 @@ Tento dokument definuje závazná pravidla, zásady spolupráce a pracovní post
 ---
 
 ## 4. Běžné pracovní postupy pro asistenta
-
+ 
 Při řešení jakéhokoliv úkolu asistent postupuje podle následujícího cyklu:
-1. **Analýza:** Ověřit shodu s požadavky v `README.md`.
+1. **Analýza:** Ověřit shodu s požadavky v `README.md` a zadáním klienta.
 2. **Implementace / Refaktoring:** Provedení změn v kódu a doplnění testů.
-3. **Validace:** Spuštění testů a ověření funkčnosti.
-4. **Záznam do dokumentace:** Zápis provedených kroků, změn v API a rozhodnutí do `README.md`.
-5. **Commit:** `git add .` a `git commit -m "<popis změny>"` (s ověřením hooku).
-6. **Report uživateli:** Shrnutí úprav a vyčkání na další pokyny (případně schválení pro push).
+3. **Validace:** Spuštění testů a ověření funkčnosti (včetně Docker kontejnerů).
+4. **Záznam do dokumentace:** Zápis provedených kroků, změn v API a rozhodnutí do `README.md` i `PPRO_Dokumentace.docx`.
+5. **Při pokynu k pushi („pushni to“):** Automatické provedení celého řetězce: aktualizace obou dokumentací (Word + README), ověření Dockeru, commit a `git push`.
+
