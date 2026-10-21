@@ -305,6 +305,12 @@ pytest -v
 
 ## 8. Deník změn a postup prací (Changelog)
 
+- **2026-10-21 (Oprava Docker buildu a spuštění kontejnerů):**
+  - Opraven `Dockerfile`: odstraněn krok `apt-get install build-essential libpq-dev`, který selhával na nekonzistenci balíčků v Debian repositáři; projekt využívá `psycopg2-binary`, který obsahuje předkompilované knihovny libpq, takže systémová kompilace není potřeba.
+  - Vytvořen `.dockerignore` pro optimalizaci kontextu Docker sestavení (vyloučeny lokální virtuální prostředí `.venv`, cache, git apod.).
+  - Odstraněn zastaralý parametr `version` v `docker-compose.yml`.
+  - Otestován build a úspěšně spuštěny kontejnery `drevenka_postgres` (databáze) a `drevenka_web` (aplikace) na portu 8000.
+
 - **2026-10-21 (Přepracování vzhledu webového rozhraní):**
   - Nový vizuální styl inspirovaný Shopify Admin (Polaris), Stripe Dashboard a GitHub: boční navigace se seskupením (Provoz / Analýzy), neutrální šedá paleta, systémové písmo, kompaktní tabulky s čísly zarovnanými doprava a SKU v neproporcionálním písmu.
   - Odstraněny všechny emoji z šablon; ikony v navigaci jsou jednoduché čárové SVG, stavy jsou textové štítky s barevnou tečkou.

@@ -2,13 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Instalace systémových knihoven pro kompilaci balíčků (např. psycopg2)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
+# Systémové balíčky nejsou potřeba: psycopg2-binary obsahuje předkompilovaný libpq.
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
