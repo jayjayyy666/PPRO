@@ -9,7 +9,7 @@ Vygeneruje:
 """
 import random
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     try:
@@ -234,7 +234,7 @@ def seed_database():
                     target_warehouse_id=tgt,
                     note=note,
                     performed_by="Petr Doležal",
-                    created_at=datetime.utcnow() - timedelta(days=random.randint(1, 10)),
+                    created_at=datetime.now(timezone.utc) - timedelta(days=random.randint(1, 10)),
                 )
             )
 
@@ -243,7 +243,7 @@ def seed_database():
             order = OrderModel(
                 order_number=f"OBJ-2026-000{idx+1}",
                 customer_id=cust.id,
-                order_date=datetime.utcnow() - timedelta(days=idx * 2),
+                order_date=datetime.now(timezone.utc) - timedelta(days=idx * 2),
                 status=OrderStatus.SHIPPED if idx > 0 else OrderStatus.CONFIRMED,
                 note="Objednávka z e-shopu",
                 total_price=0.0,
@@ -263,7 +263,7 @@ def seed_database():
             order.total_price = 240.0
 
             if order.status == OrderStatus.SHIPPED:
-                order.shipped_at = datetime.utcnow()
+                order.shipped_at = datetime.now(timezone.utc)  # type: ignore[assignment]
                 db.add(
                     StockMovementModel(
                         movement_type=MovementType.DISPATCH,

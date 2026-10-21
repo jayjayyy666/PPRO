@@ -1,7 +1,7 @@
 """
 Doménový model pro zákazníky, objednávky a položky objednávek (Dřevěnka s.r.o.).
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import List, Optional
 import uuid
@@ -43,7 +43,7 @@ class Customer:
         self.phone = phone.strip()
         self.address = address.strip()
         self.is_active = is_active
-        self.created_at = created_at or datetime.utcnow()
+        self.created_at = created_at or datetime.now(timezone.utc)
 
     def deactivate(self) -> None:
         """Soft-delete zákazníka bez fyzického smazání databáze."""
@@ -80,7 +80,7 @@ class OrderItem:
         self.product_id = product_id
         self.variant_id = variant_id
         self.warehouse_id = warehouse_id
-        self.quantity = int(quantity)
+        self.quantity = quantity
         self.unit_price = float(unit_price)
 
     @property
@@ -117,7 +117,7 @@ class Order:
         self.status = status
         self.items = items or []
         self.note = note.strip()
-        self.order_date = order_date or datetime.utcnow()
+        self.order_date = order_date or datetime.now(timezone.utc)
         self.shipped_at = shipped_at
 
     @property
@@ -138,7 +138,7 @@ class Order:
         if self.status == OrderStatus.CANCELLED:
             raise ValueError("Zrušenou objednávku nelze odeslat.")
         self.status = OrderStatus.SHIPPED
-        self.shipped_at = datetime.utcnow()
+        self.shipped_at = datetime.now(timezone.utc)
 
     def cancel(self) -> None:
         if self.status == OrderStatus.SHIPPED:

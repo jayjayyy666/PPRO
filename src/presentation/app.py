@@ -2,7 +2,7 @@
 FastAPI webová aplikace a REST API pro Dřevěnka s.r.o.
 Prezentační vrstva třívrstvé architektury.
 """
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from typing import List, Optional
 from fastapi import FastAPI, Depends, Request, Form, Query, HTTPException, status
@@ -108,9 +108,9 @@ def page_dashboard(request: Request, db: Session = Depends(get_db)):
     red_count = sum(1 for a in low_stock_alerts if a.urgency_status == "RED")
 
     return templates.TemplateResponse(
-        "dashboard.html",
-        {
-            "request": request,
+        request=request,
+        name="dashboard.html",
+        context={
             "active_page": "dashboard",
             "total_products_count": total_prods,
             "hradec_total_stock": h_total,
@@ -143,9 +143,9 @@ def page_products(
     categories = db.query(CategoryModel).order_by(CategoryModel.name).all()
 
     return templates.TemplateResponse(
-        "products.html",
-        {
-            "request": request,
+        request=request,
+        name="products.html",
+        context={
             "active_page": "products",
             "products": products,
             "categories": categories,
@@ -171,9 +171,9 @@ def page_orders(
     warehouses = inv_service.get_warehouses()
 
     return templates.TemplateResponse(
-        "orders.html",
-        {
-            "request": request,
+        request=request,
+        name="orders.html",
+        context={
             "active_page": "orders",
             "orders": orders,
             "available_products": products,
@@ -273,9 +273,9 @@ def page_transfer(
     warehouses = inv_service.get_warehouses()
 
     return templates.TemplateResponse(
-        "transfer.html",
-        {
-            "request": request,
+        request=request,
+        name="transfer.html",
+        context={
             "active_page": "transfer",
             "products": products,
             "warehouses": warehouses,
@@ -334,9 +334,9 @@ def page_movements(
     movements = inv_service.get_movements_history(limit=100)
 
     return templates.TemplateResponse(
-        "movements.html",
-        {
-            "request": request,
+        request=request,
+        name="movements.html",
+        context={
             "active_page": "movements",
             "movements": movements,
             "success": success,
@@ -352,7 +352,7 @@ def page_reports(
     db: Session = Depends(get_db),
 ):
     """Měsíční obrat po kategoriích (požadavek 8: Co firmu živí)."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     y = year or now.year
     m = month or now.month
 
@@ -361,9 +361,9 @@ def page_reports(
     total_rev = sum(c.total_revenue for c in cat_stats)
 
     return templates.TemplateResponse(
-        "reports.html",
-        {
-            "request": request,
+        request=request,
+        name="reports.html",
+        context={
             "active_page": "reports",
             "selected_year": y,
             "selected_month": m,
@@ -398,17 +398,17 @@ def api_get_products(db: Session = Depends(get_db)):
         ]
         results.append(
             ProductResponseDTO(
-                id=p.id,
-                code=p.code,
-                name=p.name,
-                purchase_price=p.purchase_price,
-                selling_price=p.selling_price,
-                description=p.description,
-                min_stock_level=p.min_stock_level,
+                id=p.id,  # type: ignore[arg-type]
+                code=p.code,  # type: ignore[arg-type]
+                name=p.name,  # type: ignore[arg-type]
+                purchase_price=p.purchase_price,  # type: ignore[arg-type]
+                selling_price=p.selling_price,  # type: ignore[arg-type]
+                description=p.description,  # type: ignore[arg-type]
+                min_stock_level=p.min_stock_level,  # type: ignore[arg-type]
                 total_physical_stock=phys,
                 total_reserved_stock=res,
                 total_available_stock=avail,
-                is_below_minimum=phys < p.min_stock_level,
+                is_below_minimum=phys < p.min_stock_level,  # type: ignore[arg-type]
                 categories=[{"id": c.id, "name": c.name, "description": c.description} for c in p.categories],
                 stock_details=stock_details,
             )
@@ -423,14 +423,14 @@ def api_create_order(data: OrderCreateDTO, db: Session = Depends(get_db)):
     try:
         order = order_service.create_order(data)
         return OrderResponseDTO(
-            id=order.id,
-            order_number=order.order_number,
+            id=order.id,  # type: ignore[arg-type]
+            order_number=order.order_number,  # type: ignore[arg-type]
             customer_name=order.customer.name,
             customer_email=order.customer.email,
-            status=order.status,
-            total_price=order.total_price,
-            note=order.note,
-            order_date=order.order_date,
+            status=order.status,  # type: ignore[arg-type]
+            total_price=order.total_price,  # type: ignore[arg-type]
+            note=order.note,  # type: ignore[arg-type]
+            order_date=order.order_date,  # type: ignore[arg-type]
             items=[
                 {
                     "id": i.id,

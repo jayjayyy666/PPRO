@@ -3,6 +3,7 @@ Aplikační služba pro správu skladových zásob, meziskladové převody a inv
 """
 
 from __future__ import annotations
+from typing import cast
 from sqlalchemy.orm import Session
 from src.domain.models import MovementType
 from src.infrastructure.models import (
@@ -150,7 +151,7 @@ class InventoryService:
             raise ValueError("Fyzický stav při inventuře nesmí být záporný.")
 
         stock_item = self.get_or_create_stock_item(warehouse_id, product_id)
-        old_physical = stock_item.physical_quantity
+        old_physical = cast(int, stock_item.physical_quantity)
         diff = actual_quantity - old_physical
 
         stock_item.physical_quantity = actual_quantity

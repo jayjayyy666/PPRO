@@ -101,7 +101,7 @@ Projekt beze zbytku naplňuje všechna kritéria společného minima pro předm�
 
 | Požadavek minima | Způsob realizace v projektu Dřevěnka s.r.o. |
 | :--- | :--- |
-| **Technologický stack (Python)** | **Backend:** Python 3.11+, FastAPI (asynchronní i synchronní REST API, automatická OpenAPI dokumentace).<br>**Prezentační vrstva:** Jinja2 serverové šablony + Vanilla CSS (optimalizováno pro dotykové mobily skladníků).<br>**ORM & Datová vrstva:** SQLAlchemy 2.0 (deklarativní mapování), Pydantic v2 (DTO & validace).<br>**Relační DB:** PostgreSQL (v produkci/Dockeru) / SQLite (lokální rychlé testy).<br>**Testy:** pytest (unit & integrační testy). |
+| **Technologický stack (Python)** | **Backend:** Python 3.11+, FastAPI (asynchronní i synchronní REST API, automatická OpenAPI dokumentace).<br>**Prezentační vrstva:** Jinja2 serverové šablony + Vanilla CSS (optimalizováno pro dotykové mobily skladníků).<br>**ORM & Datová vrstva:** SQLAlchemy 2.0 (typované deklarativní mapování `Mapped[...]` / `mapped_column`, ovladač `postgresql+psycopg2`, časová razítka v UTC s časovou zónou), Pydantic v2 (DTO & validace).<br>**Relační DB:** PostgreSQL (v produkci/Dockeru) / SQLite (lokální rychlé testy).<br>**Testy:** pytest (unit & integrační testy). |
 | **3 vrstvy se závislostmi jedním směrem** | 1. **Prezentační vrstva (`src/presentation/`):** FastAPI webové routy, Jinja2 šablony, CSS assety, REST API.<br>2. **Aplikační/Doménová vrstva (`src/domain/`, `src/application/`):** Doménové modely, `InventoryService`, `OrderService`, `ReportingService`.<br>3. **Datová/Infrastrukturní vrstva (`src/infrastructure/`):** SQLAlchemy ORM modely, DB engine, seed skript pro 400 hraček. |
 | **Relační databáze v Dockeru** | PostgreSQL běžící v kontejneru v rámci Docker Compose sítě (`drevenka_postgres`). |
 | **Databázová integrita** | Integritní omezení `CHECK (physical_quantity >= 0)`, cizí klíče a unikátní indexy pro SKU. |
@@ -304,6 +304,14 @@ pytest -v
 ---
 
 ## 8. Deník změn a postup prací (Changelog)
+
+- **2026-10-21 (Modernizace ORM, časových razítek a kompatibility knihoven):**
+  - ORM modely v `src/infrastructure/models.py` převedeny na typovaný styl SQLAlchemy 2.0 (`Mapped[...]`, `mapped_column`, typované `relationship`) – lepší statická kontrola typů v IDE.
+  - Nahrazeno zastaralé `datetime.utcnow()` za `datetime.now(timezone.utc)` v modelech, seed skriptu i prezentační vrstvě.
+  - `src/infrastructure/database.py`: URL `postgresql://` se explicitně přepisuje na `postgresql+psycopg2://` (SQLAlchemy 2.1+ jinak defaultně volí psycopg v3, který není v závislostech).
+  - `src/presentation/app.py`: volání `TemplateResponse` převedena na novou signaturu Starlette (`request=`, `name=`, `context=`).
+  - Drobné typové úpravy v doménových modelech, službách a testech; všech 9 testů `pytest` prochází.
+  - Aktualizován Word dokument `PPRO_Dokumentace.docx` (záznam o technické úpravě).
 
 - **2026-10-07 (Oprava IDE prostředí a typových anotací):**
   - Vyřešena integrace Python virtuálního prostředí pro vývojová prostředí a jazykové servery (Pyrefly, Pyright, VS Code / Antigravity IDE) pomocí konfigurace `pyrefly.toml`, `pyproject.toml`, `pyrightconfig.json` a `.vscode/settings.json`, včetně vytvoření symlink/junction `.venv` -> `venv`.

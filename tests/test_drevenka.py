@@ -270,7 +270,7 @@ def test_monthly_category_revenue(db_session):
         items=[OrderItemCreateDTO(product_id=kaca.id, warehouse_id=wh_h.id, quantity=2)],
     )
     order = order_service.create_order(order_dto)
-    order_service.ship_order(order.id)
+    order_service.ship_order(str(order.id))
 
     now = order.order_date
     revenues = rep_service.get_monthly_category_revenue(year=now.year, month=now.month)

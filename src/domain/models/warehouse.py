@@ -1,7 +1,7 @@
 """
 Doménový model pro sklady, zásoby a auditní pohyby (Dřevěnka s.r.o.).
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 import uuid
@@ -65,8 +65,8 @@ class StockItem:
         self.warehouse_id = warehouse_id
         self.product_id = product_id
         self.variant_id = variant_id
-        self.physical_quantity = int(physical_quantity)
-        self.reserved_quantity = int(reserved_quantity)
+        self.physical_quantity = physical_quantity
+        self.reserved_quantity = reserved_quantity
 
     @property
     def available_quantity(self) -> int:
@@ -157,13 +157,13 @@ class StockMovement:
         self.movement_type = movement_type
         self.product_id = product_id
         self.variant_id = variant_id
-        self.quantity = int(quantity)
+        self.quantity = quantity
         self.source_warehouse_id = source_warehouse_id
         self.target_warehouse_id = target_warehouse_id
         self.reference_order_id = reference_order_id
         self.note = note.strip()
         self.performed_by = performed_by.strip()
-        self.created_at = created_at or datetime.utcnow()
+        self.created_at = created_at or datetime.now(timezone.utc)
 
     def __repr__(self) -> str:
         return (

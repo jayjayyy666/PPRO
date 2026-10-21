@@ -80,10 +80,10 @@ class Product:
         self.description = description.strip()
         self.purchase_price = float(purchase_price)
         self.selling_price = float(selling_price)
-        self.min_stock_level = int(min_stock_level)
+        self.min_stock_level = min_stock_level
         self.categories = categories or []
         self.variants = variants or []
-        self.created_at = created_at or datetime.utcnow()
+        self.created_at = created_at or datetime.now(timezone.utc)
 
     def add_category(self, category: Category) -> None:
         if not any(c.id == category.id for c in self.categories):

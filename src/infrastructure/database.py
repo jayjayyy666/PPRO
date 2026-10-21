@@ -4,6 +4,11 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./drevenka.db")
 
+# SQLAlchemy 2.1+ defaultně používá psycopg (v3) pro PostgreSQL.
+# Explicitně přepíšeme na psycopg2, který máme nainstalovaný (psycopg2-binary).
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
 engine = create_engine(

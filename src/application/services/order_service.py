@@ -7,7 +7,7 @@ Implementuje klíčové požadavky klienta:
   - Otevřený bod 2: Dvoustavová evidence – rezervace při příjmu objednávky, fyzický odpis při expedici.
 """
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from sqlalchemy.orm import Session
 
@@ -73,6 +73,8 @@ class OrderService:
         primary_wh = self.db.query(WarehouseModel).filter(WarehouseModel.is_primary == True).first()
         if not primary_wh:
             primary_wh = self.db.query(WarehouseModel).first()
+        if not primary_wh:
+            raise ValueError("V systému neexistuje žádný sklad pro expedici.")
 
         missing_details = []
         validated_items = []
@@ -119,7 +121,7 @@ class OrderService:
 
         # 4. Vše je skladem -> Vytvoření objednávky, snapshot cen a atomická rezervace zásob
         order_count = self.db.query(OrderModel).count() + 1
-        year = datetime.utcnow().year
+        year = datetime.now(timezone.utc).year
         order_num = f"OBJ-{year}-{order_count:04d}"
 
         order = OrderModel(
@@ -127,7 +129,7 @@ class OrderService:
             order_number=order_num,
             status=OrderStatus.CONFIRMED,
             note=data.note,
-            order_date=datetime.utcnow(),
+            order_date=datetime.now(timezone.utc),
             total_price=0.0,
         )
         self.db.add(order)
@@ -199,7 +201,7 @@ class OrderService:
             self.db.add(movement)
 
         order.status = OrderStatus.SHIPPED
-        order.shipped_at = datetime.utcnow()
+        order.shipped_at = datetime.now(timezone.utc)
         self.db.commit()
         self.db.refresh(order)
         return order
